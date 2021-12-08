@@ -1,3 +1,5 @@
+![example event parameter](https://github.com/temofey1989/state-machine/actions/workflows/build.yml/badge.svg?branch=main)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=temofey1989_state-machine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=temofey1989_state-machine)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
 # Overview
