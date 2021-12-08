@@ -3,6 +3,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+import java.time.Duration
+
 plugins {
     kotlin("jvm") version "1.8.0"
     `java-library`
@@ -10,6 +12,7 @@ plugins {
     signing
     jacoco
     id("org.sonarqube") version "3.5.0.2730"
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
 group = "io.justdevit.libs"
@@ -102,18 +105,22 @@ publishing {
             suppressPomMetadataWarningsFor("runtimeElements")
         }
     }
-    repositories {
-        maven {
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = properties["ossrhUsername"] as String?
-                password = properties["ossrhPassword"] as String?
-            }
-        }
-    }
 }
 
 signing {
     useGpgCmd()
     sign(publishing.publications["maven"])
+}
+
+nexusPublishing {
+    transitionCheckOptions {
+        maxRetries.set(100)
+        delayBetween.set(Duration.ofSeconds(5))
+    }
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
 }
