@@ -4,34 +4,33 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.0"
+    kotlin("jvm") version "1.8.0"
     `java-library`
     `maven-publish`
     signing
     jacoco
-    id("org.sonarqube") version "3.3"
+    id("org.sonarqube") version "3.5.0.2730"
 }
 
 group = "io.justdevit.libs"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories {
     mavenCentral()
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_16
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 dependencies {
     implementation(kotlin("stdlib"))
 
-    testCompileOnly("org.junit.jupiter:junit-jupiter:5.8.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.2")
+    testCompileOnly("org.junit.jupiter:junit-jupiter:5.9.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
 
-    testImplementation("org.assertj:assertj-core:3.21.0")
-    testImplementation("io.mockk:mockk:1.12.1")
-
+    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("io.mockk:mockk:1.13.3")
 }
 
 java {
@@ -58,6 +57,10 @@ tasks {
         reports {
             xml.required.set(true)
         }
+    }
+
+    withType<Sign> {
+        onlyIf { !project.version.toString().endsWith("SNAPSHOT") }
     }
 }
 
