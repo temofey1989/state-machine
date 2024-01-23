@@ -1,140 +1,124 @@
 package io.justdevit.libs.statemachine
 
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
 
-internal class EventResultTest {
+internal class EventResultTest : FreeSpec({
 
-    @Nested
-    inner class SuccessResultTests {
+    "Success result tests" - {
 
-        private val result: EventResult = SuccessResult
+        val result: EventResult = SuccessResult
 
-        @Test
-        fun `Should have correct extension attribute`() {
-            assertThat(result.successful).isTrue
+        "Should have correct extension attribute" {
+            result.successful shouldBe true
         }
 
-        @Test
-        fun `Should be able to execute action on success`() {
+        "Should be able to execute action on success" {
             var variable = false
 
             result.ifSuccess {
                 variable = true
             }
 
-            assertThat(variable).isTrue
+            variable shouldBe true
         }
 
-        @Test
-        fun `Should be able to ignore execute action on rejection`() {
+        "Should be able to ignore execute action on rejection" {
             var variable = false
 
             result.ifRejected {
                 variable = true
             }
 
-            assertThat(variable).isFalse
+            variable shouldBe false
         }
 
-        @Test
-        fun `Should be able to ignore execute action on failure`() {
+        "Should be able to ignore execute action on failure" {
             var variable = false
 
             result.ifFailed {
                 variable = true
             }
 
-            assertThat(variable).isFalse
+            variable shouldBe false
         }
     }
 
-    @Nested
-    inner class RejectedResultTests {
+    "Rejected result tests" - {
 
-        private val result: EventResult = RejectedResult("TEST")
+        val result: EventResult = RejectedResult("TEST")
 
-        @Test
-        fun `Should have correct extension attribute`() {
-            assertThat(result.successful).isFalse
+        "Should have correct extension attribute" {
+            result.successful shouldBe false
         }
 
-        @Test
-        fun `Should be able to execute ignore action on success`() {
+        "Should be able to execute ignore action on success" {
             var variable = false
 
             result.ifSuccess {
                 variable = true
             }
 
-            assertThat(variable).isFalse
+            variable shouldBe false
         }
 
-        @Test
-        fun `Should be able to execute action on rejection`() {
+        "Should be able to execute action on rejection" {
             var variable = false
 
             result.ifRejected {
                 variable = true
             }
 
-            assertThat(variable).isTrue
+            variable shouldBe true
         }
 
-        @Test
-        fun `Should be able to execute ignore action on failure`() {
+        "Should be able to execute ignore action on failure" {
             var variable = false
 
             result.ifFailed {
                 variable = true
             }
 
-            assertThat(variable).isFalse
+            variable shouldBe false
         }
     }
 
-    @Nested
-    inner class FailedResultTests {
+    "Failed result tests" - {
 
-        private val result: EventResult = FailedResult(IllegalArgumentException("TEST"))
+        val result: EventResult = FailedResult(IllegalArgumentException("TEST"))
 
-        @Test
-        fun `Should have correct extension attribute`() {
-            assertThat(result.successful).isFalse
+        "Should have correct extension attribute" {
+            result.successful shouldBe false
         }
 
-        @Test
-        fun `Should be able to execute ignore action on success`() {
+        "Should be able to execute ignore action on success" {
             var variable = false
 
             result.ifSuccess {
                 variable = true
             }
 
-            assertThat(variable).isFalse
+            variable shouldBe false
         }
 
-        @Test
-        fun `Should be able to execute ignore action on rejection`() {
+        "Should be able to execute ignore action on rejection" {
             var variable = false
 
             result.ifRejected {
                 variable = true
             }
 
-            assertThat(variable).isFalse
+            variable shouldBe false
         }
 
-        @Test
-        fun `Should be able to execute action on failure`() {
+        "Should be able to execute action on failure" {
             var variable = false
 
             result.ifFailed {
                 variable = true
             }
 
-            assertThat(variable).isTrue
+            variable shouldBe true
         }
     }
-}
+})

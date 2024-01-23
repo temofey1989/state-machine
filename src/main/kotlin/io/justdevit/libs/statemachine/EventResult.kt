@@ -8,7 +8,7 @@ sealed class EventResult
 /**
  * Represents the success result of the event processing.
  */
-object SuccessResult : EventResult()
+data object SuccessResult : EventResult()
 
 /**
  * Represents the rejected result of the event processing.

@@ -6,35 +6,34 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Duration
 
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "1.9.20"
     `java-library`
     `maven-publish`
     signing
     jacoco
-    id("org.sonarqube") version "3.5.0.2730"
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("org.sonarqube") version "4.4.1.3373"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-1"
 }
 
-group = "io.justdevit.libs"
-version = "0.1.1"
-
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_17
+val kotestVersion: String by project
+val mockkVersion: String by project
 
 dependencies {
     implementation(kotlin("stdlib"))
 
-    testCompileOnly("org.junit.jupiter:junit-jupiter:5.9.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    testImplementation("io.kotest:kotest-property:$kotestVersion")
 
-    testImplementation("org.assertj:assertj-core:3.24.2")
-    testImplementation("io.mockk:mockk:1.13.3")
+    testImplementation("io.mockk:mockk:$mockkVersion")
 }
+
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 java {
     withSourcesJar()
@@ -44,7 +43,10 @@ java {
 tasks {
     withType<KotlinCompile> {
         kotlinOptions {
-            freeCompilerArgs = listOf("-Xjsr305=strict")
+            freeCompilerArgs = listOf(
+                "-Xjsr305=strict",
+                "-Xcontext-receivers",
+            )
             jvmTarget = java.sourceCompatibility.toString()
         }
     }
@@ -86,7 +88,7 @@ publishing {
                 licenses {
                     license {
                         name.set("The Apache License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                     }
                 }
                 developers {

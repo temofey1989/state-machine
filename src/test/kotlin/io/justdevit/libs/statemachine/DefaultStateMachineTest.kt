@@ -2,301 +2,363 @@ package io.justdevit.libs.statemachine
 
 import io.justdevit.libs.statemachine.action.TransitionAction
 import io.justdevit.libs.statemachine.guard.TransitionGuard
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.maps.shouldBeEmpty
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.instanceOf
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
-internal class DefaultStateMachineTest {
+internal class DefaultStateMachineTest : FreeSpec({
 
-    private val globalAction = mockk<TransitionAction<String, String>> {
-        justRun { beforeEntry(any()) }
-        justRun { afterEntry(any()) }
-        justRun { beforeExit(any()) }
-        justRun { afterExit(any()) }
-    }
-    private val globalGuard = mockk<TransitionGuard<String, String>> {
-        every { onEntry(any()) } returns true
-        every { onExit(any()) } returns true
-    }
-    private val action = mockk<TransitionAction<String, String>> {
-        justRun { beforeEntry(any()) }
-        justRun { afterEntry(any()) }
-        justRun { beforeExit(any()) }
-        justRun { afterExit(any()) }
-    }
-    private val guard = mockk<TransitionGuard<String, String>> {
-        every { onEntry(any()) } returns true
-        every { onExit(any()) } returns true
-    }
+    "Attribute tests" - {
 
-    private val config = StateMachineConfiguration(
-        initialState = "S0",
-        finalStates = setOf("S1", "S2"),
-        globalActions = listOf(globalAction),
-        globalGuards = listOf(globalGuard),
-        transitions = listOf(
-            Transition(
-                sourceState = "S0",
-                targetState = "S1",
-                event = "E1"
-            ),
-            Transition(
-                sourceState = "S0",
-                targetState = "S2",
-                event = "E2",
-                config = TransitionConfiguration(
-                    actions = listOf(action),
-                    guards = listOf(guard)
-                )
-            ),
-        )
-    )
-
-    @Nested
-    inner class AttributeTests {
-
-        @Test
-        fun `Should throw exception for empty final states`() {
-            val config = StateMachineConfiguration<String, String>(
+        "Should throw exception for empty final states" {
+            val corruptedConfig = StateMachineConfiguration<String, String>(
                 initialState = "S0",
                 finalStates = setOf(),
                 transitions = emptyList()
             )
 
-            assertThrows<IllegalArgumentException> { DefaultStateMachine(config = config) }
+            shouldThrow<IllegalArgumentException> { DefaultStateMachine(config = corruptedConfig) }
         }
 
-        @Test
-        fun `Should be able to return ID`() {
+        "Should be able to return ID" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
 
-            assertThat(stateMachine.id).isEqualTo(config.id)
+            stateMachine.id shouldBe config.id
         }
 
-        @Test
-        fun `Should be able to return actual state`() {
+        "Should be able to return actual state" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
 
-            assertThat(stateMachine.actualState).isEqualTo(config.initialState)
+            stateMachine.actualState shouldBe config.initialState
         }
 
-        @Test
-        fun `Should be able to return unfinished state`() {
+        "Should be able to return unfinished state" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
 
-            assertThat(stateMachine.finished).isFalse
+            stateMachine.finished shouldBe false
         }
     }
 
-    @Nested
-    inner class StartTests {
+    "Start tests" - {
 
-        @Test
-        fun `Should be able to return finished state`() {
+        "Should be able to return finished state" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
             stateMachine.start()
 
             val result = stateMachine.sendEvent("E1")
 
-            assertThat(result).isEqualTo(SuccessResult)
-            assertThat(stateMachine.finished).isTrue
+            result shouldBe SuccessResult
+            stateMachine.finished shouldBe true
         }
 
-        @Test
-        fun `Should be able to start state machine on defined state`() {
+        "Should be able to start state machine on defined state" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
             stateMachine.start("S1")
 
-            assertThat(stateMachine.actualState).isEqualTo("S1")
-            assertThat(stateMachine.finished).isTrue
+            stateMachine.actualState shouldBe "S1"
+            stateMachine.finished shouldBe true
         }
 
-        @Test
-        fun `Should throw on second start`() {
+        "Should throw on second start" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
             stateMachine.start()
 
-            assertThrows<IllegalStateException> { stateMachine.start() }
+            shouldThrow<IllegalStateException> {
+                stateMachine.start()
+            }
         }
     }
 
-    @Nested
-    inner class ResetTests {
+    "Reset Ttsts" - {
 
-        @Test
-        fun `Should throw on reset for not started state machine`() {
+        "Should throw on reset for not started state machine" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
 
-            assertThrows<IllegalStateException> { stateMachine.reset() }
+            shouldThrow<IllegalStateException> {
+                stateMachine.reset()
+            }
         }
 
-        @Test
-        fun `Should be able to reset state to initial`() {
+        "Should be able to reset state to initial" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
             stateMachine.start("S1")
 
             stateMachine.reset()
 
-            assertThat(stateMachine.actualState).isEqualTo(config.initialState)
+            stateMachine.actualState shouldBe config.initialState
         }
 
-        @Test
-        fun `Should be able to reset state to defined state`() {
+        "Should be able to reset state to defined state" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
             stateMachine.start()
 
             stateMachine.reset("S1")
 
-            assertThat(stateMachine.actualState).isEqualTo("S1")
+            stateMachine.actualState shouldBe "S1"
         }
     }
 
-    @Nested
-    inner class SendingEventTests {
+    "Sending event tests" - {
 
-        @Test
-        fun `Should throw on send event for not started state machine`() {
+        "Should throw on send event for not started state machine" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
 
-            assertThrows<IllegalStateException> { stateMachine.sendEvent("E1") }
+            shouldThrow<IllegalStateException> {
+                stateMachine.sendEvent("E1")
+            }
         }
 
-        @Test
-        fun `Should reject on no transition`() {
+        "Should reject on no transition" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
             stateMachine.start()
 
             val result = stateMachine.sendEvent("TEST")
 
-            assertThat(result).isInstanceOf(RejectedResult::class.java)
+            result shouldBe instanceOf<RejectedResult>()
         }
 
-        @Test
-        fun `Should return failed result on exception`() {
+        "Should return failed result on exception" {
+            val context = buildConfig {
+                val exception = Exception("TEST")
+                every { globalAction.beforeExit(any()) } throws exception
+            }
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
             stateMachine.start()
-            val exception = Exception("TEST")
-            every { globalAction.beforeExit(any()) } throws exception
 
             val result = stateMachine.sendEvent("E1")
 
-            assertThat(result).isInstanceOf(FailedResult::class.java)
+            result shouldBe instanceOf<FailedResult>()
             with(result as FailedResult) {
-                assertThat(this.exception).isEqualTo(exception)
+                this.exception shouldBe exception
             }
         }
 
-        @Test
-        fun `Should be able to transit on event`() {
+        "Should be able to transit on event" {
+            val context = buildConfig()
+            val config = context.config
+
             val stateMachine = DefaultStateMachine(config)
             stateMachine.start()
 
             val result = stateMachine.sendEvent("E1")
 
-            assertThat(result).isEqualTo(SuccessResult)
-            assertThat(stateMachine.actualState).isEqualTo("S1")
+            result shouldBe SuccessResult
+            stateMachine.actualState shouldBe "S1"
             val slot = slot<TransitionContext<String, String>>()
-            verify { globalAction.beforeExit(capture(slot)) }
-            with(slot.captured) {
-                assertThat(this.stateMachine).isEqualTo(stateMachine)
-                assertThat(event).isEqualTo("E1")
-                assertThat(sourceState).isEqualTo(config.initialState)
-                assertThat(targetState).isEqualTo("S1")
-                assertThat(parameters).isEmpty()
+            with(context.mocks) {
+                verify { globalAction.beforeExit(capture(slot)) }
+                with(slot.captured) {
+                    this.stateMachine shouldBe stateMachine
+                    event shouldBe "E1"
+                    sourceState shouldBe config.initialState
+                    targetState shouldBe "S1"
+                    parameters.shouldBeEmpty()
+                }
+                verify { globalAction.afterExit(slot.captured) }
+                verify { globalAction.beforeEntry(slot.captured) }
+                verify { globalAction.afterEntry(slot.captured) }
+                verify { globalGuard.onExit(slot.captured) }
+                verify { globalGuard.onEntry(slot.captured) }
             }
-            verify { globalAction.afterExit(slot.captured) }
-            verify { globalAction.beforeEntry(slot.captured) }
-            verify { globalAction.afterEntry(slot.captured) }
-            verify { globalGuard.onExit(slot.captured) }
-            verify { globalGuard.onEntry(slot.captured) }
         }
     }
 
-    @Nested
-    inner class GuardsTests {
+    "Guards tests" - {
 
-        private val stateMachine = DefaultStateMachine(config)
-
-        init {
+        "Should be rejected by global guard on exit" {
+            val context = buildConfig {
+                every { globalGuard.onExit(any()) } returns false
+            }
+            val config = context.config
+            val stateMachine = DefaultStateMachine(config)
             stateMachine.start()
-        }
-
-        @Test
-        fun `Should be rejected by global guard on exit`() {
-            every { globalGuard.onExit(any()) } returns false
 
             val result = stateMachine.sendEvent("E1")
 
-            assertThat(result).isInstanceOf(RejectedResult::class.java)
-            verify { globalAction.beforeExit(any()) }
-            verify { globalGuard.onExit(any()) }
-            verify(exactly = 0) { globalAction.afterExit(any()) }
-            verify(exactly = 0) { globalAction.beforeEntry(any()) }
-            verify(exactly = 0) { globalGuard.onEntry(any()) }
-            verify(exactly = 0) { globalAction.afterEntry(any()) }
+            result shouldBe instanceOf<RejectedResult>()
+            with(context.mocks) {
+                verify { globalAction.beforeExit(any()) }
+                verify { globalGuard.onExit(any()) }
+                verify(exactly = 0) { globalAction.afterExit(any()) }
+                verify(exactly = 0) { globalAction.beforeEntry(any()) }
+                verify(exactly = 0) { globalGuard.onEntry(any()) }
+                verify(exactly = 0) { globalAction.afterEntry(any()) }
+            }
         }
 
-        @Test
-        fun `Should be rejected by global guard on entry`() {
-            every { globalGuard.onEntry(any()) } returns false
+        "Should be rejected by global guard on entry" {
+            val context = buildConfig {
+                every { globalGuard.onEntry(any()) } returns false
+            }
+            val config = context.config
+            val stateMachine = DefaultStateMachine(config)
+            stateMachine.start()
 
             val result = stateMachine.sendEvent("E1")
 
-            assertThat(result).isInstanceOf(RejectedResult::class.java)
-            verify { globalAction.beforeExit(any()) }
-            verify { globalGuard.onExit(any()) }
-            verify { globalAction.afterExit(any()) }
-            verify { globalAction.beforeEntry(any()) }
-            verify { globalGuard.onEntry(any()) }
-            verify(exactly = 0) { globalAction.afterEntry(any()) }
+            result shouldBe instanceOf<RejectedResult>()
+            with(context.mocks) {
+                verify { globalAction.beforeExit(any()) }
+                verify { globalGuard.onExit(any()) }
+                verify { globalAction.afterExit(any()) }
+                verify { globalAction.beforeEntry(any()) }
+                verify { globalGuard.onEntry(any()) }
+                verify(exactly = 0) { globalAction.afterEntry(any()) }
+            }
         }
 
-        @Test
-        fun `Should be rejected by guard on exit`() {
-            every { guard.onExit(any()) } returns false
+        "Should be rejected by guard on exit" {
+            val context = buildConfig {
+                every { guard.onExit(any()) } returns false
+            }
+            val config = context.config
+            val stateMachine = DefaultStateMachine(config)
+            stateMachine.start()
 
             val result = stateMachine.sendEvent("E2")
 
-            assertThat(result).isInstanceOf(RejectedResult::class.java)
-            verify { globalAction.beforeExit(any()) }
-            verify { action.beforeExit(any()) }
-            verify { globalGuard.onExit(any()) }
-            verify { guard.onExit(any()) }
-            verify(exactly = 0) { globalAction.afterExit(any()) }
-            verify(exactly = 0) { action.afterExit(any()) }
-            verify(exactly = 0) { globalAction.beforeEntry(any()) }
-            verify(exactly = 0) { action.beforeEntry(any()) }
-            verify(exactly = 0) { globalGuard.onEntry(any()) }
-            verify(exactly = 0) { guard.onEntry(any()) }
-            verify(exactly = 0) { globalAction.afterEntry(any()) }
-            verify(exactly = 0) { action.afterEntry(any()) }
+            result shouldBe instanceOf<RejectedResult>()
+            with(context.mocks) {
+                verify { globalAction.beforeExit(any()) }
+                verify { action.beforeExit(any()) }
+                verify { globalGuard.onExit(any()) }
+                verify { guard.onExit(any()) }
+                verify(exactly = 0) { globalAction.afterExit(any()) }
+                verify(exactly = 0) { action.afterExit(any()) }
+                verify(exactly = 0) { globalAction.beforeEntry(any()) }
+                verify(exactly = 0) { action.beforeEntry(any()) }
+                verify(exactly = 0) { globalGuard.onEntry(any()) }
+                verify(exactly = 0) { guard.onEntry(any()) }
+                verify(exactly = 0) { globalAction.afterEntry(any()) }
+                verify(exactly = 0) { action.afterEntry(any()) }
+            }
         }
 
-        @Test
-        fun `Should be rejected by guard on entry`() {
-            every { guard.onEntry(any()) } returns false
+        "Should be rejected by guard on entry" {
+            val context = buildConfig {
+                every { guard.onEntry(any()) } returns false
+            }
+            val config = context.config
+            val stateMachine = DefaultStateMachine(config)
+            stateMachine.start()
 
             val result = stateMachine.sendEvent("E2")
 
-            assertThat(result).isInstanceOf(RejectedResult::class.java)
-            verify { globalAction.beforeExit(any()) }
-            verify { action.beforeExit(any()) }
-            verify { globalGuard.onExit(any()) }
-            verify { guard.onExit(any()) }
-            verify { globalAction.afterExit(any()) }
-            verify { action.afterExit(any()) }
-            verify { globalAction.beforeEntry(any()) }
-            verify { action.beforeEntry(any()) }
-            verify { globalGuard.onEntry(any()) }
-            verify { guard.onEntry(any()) }
-            verify(exactly = 0) { globalAction.afterEntry(any()) }
-            verify(exactly = 0) { action.afterEntry(any()) }
+            result shouldBe instanceOf<RejectedResult>()
+            with(context.mocks) {
+                verify { globalAction.beforeExit(any()) }
+                verify { action.beforeExit(any()) }
+                verify { globalGuard.onExit(any()) }
+                verify { guard.onExit(any()) }
+                verify { globalAction.afterExit(any()) }
+                verify { action.afterExit(any()) }
+                verify { globalAction.beforeEntry(any()) }
+                verify { action.beforeEntry(any()) }
+                verify { globalGuard.onEntry(any()) }
+                verify { guard.onEntry(any()) }
+                verify(exactly = 0) { globalAction.afterEntry(any()) }
+                verify(exactly = 0) { action.afterEntry(any()) }
+            }
         }
     }
+})
+
+data class Mocks(
+    val globalAction: TransitionAction<String, String> = mockk<TransitionAction<String, String>> {
+        justRun { beforeEntry(any()) }
+        justRun { afterEntry(any()) }
+        justRun { beforeExit(any()) }
+        justRun { afterExit(any()) }
+    },
+    val globalGuard: TransitionGuard<String, String> = mockk<TransitionGuard<String, String>> {
+        every { onEntry(any()) } returns true
+        every { onExit(any()) } returns true
+    },
+    val action: TransitionAction<String, String> = mockk<TransitionAction<String, String>> {
+        justRun { beforeEntry(any()) }
+        justRun { afterEntry(any()) }
+        justRun { beforeExit(any()) }
+        justRun { afterExit(any()) }
+    },
+    val guard: TransitionGuard<String, String> = mockk<TransitionGuard<String, String>> {
+        every { onEntry(any()) } returns true
+        every { onExit(any()) } returns true
+    },
+)
+
+data class TestContext(
+    val config: StateMachineConfiguration<String, String>,
+    val mocks: Mocks,
+)
+
+fun buildConfig(configurer: Mocks.() -> Unit = {}): TestContext {
+    val mocks = Mocks()
+    mocks.configurer()
+    return TestContext(
+        config = StateMachineConfiguration(
+            initialState = "S0",
+            finalStates = setOf("S1", "S2"),
+            globalActions = listOf(mocks.globalAction),
+            globalGuards = listOf(mocks.globalGuard),
+            transitions = listOf(
+                Transition(
+                    sourceState = "S0",
+                    targetState = "S1",
+                    event = "E1"
+                ),
+                Transition(
+                    sourceState = "S0",
+                    targetState = "S2",
+                    event = "E2",
+                    config = TransitionConfiguration(
+                        actions = listOf(mocks.action),
+                        guards = listOf(mocks.guard)
+                    )
+                ),
+            )
+        ),
+        mocks = mocks,
+    )
 }

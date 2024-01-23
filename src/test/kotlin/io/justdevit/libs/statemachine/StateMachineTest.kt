@@ -11,13 +11,65 @@ import io.justdevit.libs.statemachine.action.TransitionAction
 import io.justdevit.libs.statemachine.dsl.stateMachine
 import io.justdevit.libs.statemachine.guard.TransitionGuard
 import io.justdevit.libs.statemachine.guard.finalStateGuard
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
 import java.math.BigDecimal
 import java.util.UUID
 
-internal class StateMachineTest {
+internal class StateMachineTest : FreeSpec({
 
+    "Should be able to move to done" {
+        val order = Order(
+            id = UUID.randomUUID(),
+            state = NEW,
+            price = BigDecimal.valueOf(100)
+        )
+        val stateMachine = stateMachine(state = order.state) {
+            initialState = NEW
+            finalStates = setOf(DONE, CANCELLED)
+
+            globalActions {
+                +LogAction()
+            }
+            globalGuards {
+                finalStateGuard()
+            }
+
+            from(NEW) {
+                to(IN_PROGRESS).with(PAYMENT_ARRIVED) {
+                    +RejectWrongPaymentAmount()
+
+                    +PersistPayment()
+                    +NotifyWarehouse()
+                    +UpdateMonitoringDashboard()
+                }
+                to(CANCELLED).with(CUSTOMER_CANCELLATION) {
+                    +SendCancellationEmail()
+                }
+            }
+
+            from(IN_PROGRESS) {
+                to(DONE).with(DELIVERED) {
+                    +SendThankYouEmail()
+                }
+                to(CANCELLED).with(CUSTOMER_CANCELLATION) {
+                    +SendCancellationEmail()
+                }
+            }
+        }
+
+        stateMachine.sendEvent(
+            PAYMENT_ARRIVED, mapOf(
+                "order" to order,
+                "payment" to Payment(100.toBigDecimal())
+            )
+        )
+        stateMachine.actualState shouldBe IN_PROGRESS
+
+        stateMachine.sendEvent(DELIVERED)
+        stateMachine.actualState shouldBe DONE
+    }
+}) {
     enum class OrderState {
         NEW, IN_PROGRESS, DONE, CANCELLED
     }
@@ -84,58 +136,4 @@ internal class StateMachineTest {
             return order.price == payment.amount
         }
     }
-
-    @Test
-    fun `Should be able to move to done`() {
-        val order = Order(
-            id = UUID.randomUUID(),
-            state = NEW,
-            price = BigDecimal.valueOf(100)
-        )
-        val stateMachine = stateMachine<OrderState, OrderEvent>(state = order.state) {
-            initialState = NEW
-            finalStates = setOf(DONE, CANCELLED)
-
-            globalActions {
-                +LogAction()
-            }
-            globalGuards {
-                finalStateGuard()
-            }
-
-            from(NEW) {
-                to(IN_PROGRESS).with(PAYMENT_ARRIVED) {
-                    +RejectWrongPaymentAmount()
-
-                    +PersistPayment()
-                    +NotifyWarehouse()
-                    +UpdateMonitoringDashboard()
-                }
-                to(CANCELLED).with(CUSTOMER_CANCELLATION) {
-                    +SendCancellationEmail()
-                }
-            }
-
-            from(IN_PROGRESS) {
-                to(DONE).with(DELIVERED) {
-                    +SendThankYouEmail()
-                }
-                to(CANCELLED).with(CUSTOMER_CANCELLATION) {
-                    +SendCancellationEmail()
-                }
-            }
-        }
-
-        stateMachine.sendEvent(
-            PAYMENT_ARRIVED, mapOf(
-                "order" to order,
-                "payment" to Payment(100.toBigDecimal())
-            )
-        )
-        assertThat(stateMachine.actualState).isEqualTo(IN_PROGRESS)
-
-        stateMachine.sendEvent(DELIVERED)
-        assertThat(stateMachine.actualState).isEqualTo(DONE)
-    }
 }
-

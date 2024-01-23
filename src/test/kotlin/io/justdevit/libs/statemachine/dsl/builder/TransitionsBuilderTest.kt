@@ -1,25 +1,22 @@
 package io.justdevit.libs.statemachine.dsl.builder
 
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
-import java.util.function.Consumer
+import io.justdevit.libs.statemachine.Transition
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.collections.shouldHaveSingleElement
 
-internal class TransitionsBuilderTest {
+internal class TransitionsBuilderTest : FreeSpec({
 
-    @Test
-    fun `Should be able to create transition`() {
+    "Should be able to create transition" {
         val builder = TransitionsBuilder<String, String>("0").apply {
             to("1").with("E1")
         }
 
         val result = builder.build()
 
-        assertThat(result).singleElement().satisfies(Consumer {
-            assertThat(it.sourceState).isEqualTo("0")
-            assertThat(it.targetState).isEqualTo("1")
-            assertThat(it.event).isEqualTo("E1")
-            assertThat(it.config.actions).isEmpty()
-            assertThat(it.config.guards).isEmpty()
-        })
+        result shouldHaveSingleElement Transition(
+            sourceState = "0",
+            targetState = "1",
+            event = "E1",
+        )
     }
-}
+})

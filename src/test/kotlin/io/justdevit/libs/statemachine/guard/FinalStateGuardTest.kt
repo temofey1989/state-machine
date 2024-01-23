@@ -2,15 +2,14 @@ package io.justdevit.libs.statemachine.guard
 
 import io.justdevit.libs.statemachine.StateMachine
 import io.justdevit.libs.statemachine.TransitionContext
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
 
-internal class FinalStateGuardTest {
+internal class FinalStateGuardTest : FreeSpec({
 
-    @Test
-    fun `Should return false on state machine is finished`() {
+    "Should return false on state machine is finished" {
         val stateMachine = mockk<StateMachine<String, String>>()
         every { stateMachine.finished } returns true
         val guard = FinalStateGuard<String, String>()
@@ -24,11 +23,10 @@ internal class FinalStateGuardTest {
             )
         )
 
-        assertThat(result).isFalse
+        result shouldBe false
     }
 
-    @Test
-    fun `Should return true on state machine is not finished`() {
+    "Should return true on state machine is not finished" {
         val stateMachine = mockk<StateMachine<String, String>>()
         every { stateMachine.finished } returns false
         val guard = FinalStateGuard<String, String>()
@@ -42,6 +40,6 @@ internal class FinalStateGuardTest {
             )
         )
 
-        assertThat(result).isTrue
+        result shouldBe true
     }
-}
+})
