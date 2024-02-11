@@ -2,46 +2,43 @@ package io.justdevit.libs.statemachine.dsl.builder
 
 import io.justdevit.libs.statemachine.action.TransitionAction
 import io.justdevit.libs.statemachine.guard.TransitionGuard
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.mockk.mockk
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
 
-internal class TransitionConfigurationBuilderTest {
+internal class TransitionConfigurationBuilderTest : FreeSpec({
 
-    @Test
-    fun `Should be able to create empty config`() {
+    "Should be able to create empty config" {
         val builder = TransitionConfigurationBuilder<Any, Any>()
 
         val result = builder.build()
 
-        assertThat(result.actions).isEmpty()
-        assertThat(result.guards).isEmpty()
+        result.actions.shouldBeEmpty()
+        result.guards.shouldBeEmpty()
     }
 
-    @Test
-    fun `Should be able to create config with action`() {
+    "Should be able to create config with action" {
         val builder = TransitionConfigurationBuilder<Any, Any>()
         val action = mockk<TransitionAction<Any, Any>>()
         builder.add(action)
 
         val result = builder.build()
 
-        assertThat(result.actions).containsExactly(action)
+        result.actions shouldHaveSingleElement action
     }
 
-    @Test
-    fun `Should be able to create config with guard`() {
+    "Should be able to create config with guard" {
         val builder = TransitionConfigurationBuilder<Any, Any>()
         val guard = mockk<TransitionGuard<Any, Any>>()
         builder.add(guard)
 
         val result = builder.build()
 
-        assertThat(result.guards).containsExactly(guard)
+        result.guards shouldHaveSingleElement guard
     }
 
-    @Test
-    fun `Should be able to create config with action and guard`() {
+    "Should be able to create config with action and guard" {
         val builder = TransitionConfigurationBuilder<Any, Any>()
         val action = mockk<TransitionAction<Any, Any>>()
         builder.add(action)
@@ -50,7 +47,7 @@ internal class TransitionConfigurationBuilderTest {
 
         val result = builder.build()
 
-        assertThat(result.actions).containsExactly(action)
-        assertThat(result.guards).containsExactly(guard)
+        result.actions shouldHaveSingleElement action
+        result.guards shouldHaveSingleElement guard
     }
-}
+})
