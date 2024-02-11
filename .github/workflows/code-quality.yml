@@ -1,11 +1,10 @@
 name: Code Quality
 
 on:
-  pull_request:
-    types: [ opened, synchronize, reopened ]
+  push:
     branches:
       - main
-  push:
+  pull_request:
     branches:
       - main
 
