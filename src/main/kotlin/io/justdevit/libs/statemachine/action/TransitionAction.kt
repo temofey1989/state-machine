@@ -8,7 +8,6 @@ import io.justdevit.libs.statemachine.dsl.StateMachineDslMarker
  */
 @StateMachineDslMarker
 interface TransitionAction<S, E> {
-
     /**
      * Step before entry to the state.
      * Executes before guards checks.

@@ -6,7 +6,6 @@ import java.util.UUID
  * Represents the State Machine.
  */
 interface StateMachine<S, in E> {
-
     /**
      * ID of the state machine.
      */
@@ -44,5 +43,8 @@ interface StateMachine<S, in E> {
      * @param parameters Metadata parameter map.
      * @throws IllegalStateException In case of the State Machine is not started.
      */
-    fun sendEvent(event: E, parameters: Map<String, Any> = emptyMap()): EventResult
+    fun sendEvent(
+        event: E,
+        parameters: Map<String, Any> = emptyMap(),
+    ): EventResult
 }

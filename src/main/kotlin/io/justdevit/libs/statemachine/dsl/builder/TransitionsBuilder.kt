@@ -11,7 +11,6 @@ import io.justdevit.libs.statemachine.dsl.StateMachineDslMarker
  */
 @StateMachineDslMarker
 data class TransitionsBuilder<S, E>(val sourceState: S) {
-
     private val transitions: MutableList<Transition<S, E>> = mutableListOf()
 
     /**
@@ -27,17 +26,22 @@ data class TransitionsBuilder<S, E>(val sourceState: S) {
      * @param event Event of the transition.
      * @param configure Configurer for transition.
      */
-    fun Pair<S, S>.with(event: E, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null) {
-        transitions += Transition(
-            sourceState = first,
-            targetState = second,
-            event = event,
-            config = TransitionConfigurationBuilder<S, E>()
-                .also {
-                    configure?.let { invoke -> it.invoke() }
-                }
-                .build()
-        )
+    fun Pair<S, S>.with(
+        event: E,
+        configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null,
+    ) {
+        transitions +=
+            Transition(
+                sourceState = first,
+                targetState = second,
+                event = event,
+                config =
+                TransitionConfigurationBuilder<S, E>()
+                    .also {
+                        configure?.let { invoke -> it.invoke() }
+                    }
+                    .build(),
+            )
     }
 
     /**

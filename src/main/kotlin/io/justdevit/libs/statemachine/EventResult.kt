@@ -15,36 +15,34 @@ data object SuccessResult : EventResult()
  * Usually by rejection from the guard.
  */
 data class RejectedResult(
-
     /**
      * Reason of the rejection.
      */
-    val reason: String
-
+    val reason: String,
 ) : EventResult()
 
 /**
  * Represents the failure of the event processing.
  */
 data class FailedResult(
-
     /**
      * The failure exception.
      */
-    val exception: Throwable
-
+    val exception: Throwable,
 ) : EventResult()
 
 /**
  * Parameter represent successfulness of the event execution.
  */
 val EventResult.successful: Boolean
-    get() = when (this) {
-        is SuccessResult -> true
+    get() =
+        when (this) {
+            is SuccessResult -> true
 
-        is RejectedResult,
-        is FailedResult -> false
-    }
+            is RejectedResult,
+            is FailedResult,
+            -> false
+        }
 
 /**
  * Function provides action of successful event processing.

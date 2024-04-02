@@ -16,66 +16,76 @@ import io.kotest.matchers.shouldBe
 import java.math.BigDecimal
 import java.util.UUID
 
-internal class StateMachineTest : FreeSpec({
+internal class StateMachineTest : FreeSpec(
+    {
 
-    "Should be able to move to done" {
-        val order = Order(
-            id = UUID.randomUUID(),
-            state = NEW,
-            price = BigDecimal.valueOf(100)
-        )
-        val stateMachine = stateMachine(state = order.state) {
-            initialState = NEW
-            finalStates = setOf(DONE, CANCELLED)
+        "Should be able to move to done" {
+            val order =
+                Order(
+                    id = UUID.randomUUID(),
+                    state = NEW,
+                    price = BigDecimal.valueOf(100),
+                )
+            val stateMachine =
+                stateMachine(state = order.state) {
+                    initialState = NEW
+                    finalStates = setOf(DONE, CANCELLED)
 
-            globalActions {
-                +LogAction()
-            }
-            globalGuards {
-                finalStateGuard()
-            }
+                    globalActions {
+                        +LogAction()
+                    }
+                    globalGuards {
+                        finalStateGuard()
+                    }
 
-            from(NEW) {
-                to(IN_PROGRESS).with(PAYMENT_ARRIVED) {
-                    +RejectWrongPaymentAmount()
+                    from(NEW) {
+                        to(IN_PROGRESS).with(PAYMENT_ARRIVED) {
+                            +RejectWrongPaymentAmount()
 
-                    +PersistPayment()
-                    +NotifyWarehouse()
-                    +UpdateMonitoringDashboard()
+                            +PersistPayment()
+                            +NotifyWarehouse()
+                            +UpdateMonitoringDashboard()
+                        }
+                        to(CANCELLED).with(CUSTOMER_CANCELLATION) {
+                            +SendCancellationEmail()
+                        }
+                    }
+
+                    from(IN_PROGRESS) {
+                        to(DONE).with(DELIVERED) {
+                            +SendThankYouEmail()
+                        }
+                        to(CANCELLED).with(CUSTOMER_CANCELLATION) {
+                            +SendCancellationEmail()
+                        }
+                    }
                 }
-                to(CANCELLED).with(CUSTOMER_CANCELLATION) {
-                    +SendCancellationEmail()
-                }
-            }
 
-            from(IN_PROGRESS) {
-                to(DONE).with(DELIVERED) {
-                    +SendThankYouEmail()
-                }
-                to(CANCELLED).with(CUSTOMER_CANCELLATION) {
-                    +SendCancellationEmail()
-                }
-            }
-        }
-
-        stateMachine.sendEvent(
-            PAYMENT_ARRIVED, mapOf(
-                "order" to order,
-                "payment" to Payment(100.toBigDecimal())
+            stateMachine.sendEvent(
+                PAYMENT_ARRIVED,
+                mapOf(
+                    "order" to order,
+                    "payment" to Payment(100.toBigDecimal()),
+                ),
             )
-        )
-        stateMachine.actualState shouldBe IN_PROGRESS
+            stateMachine.actualState shouldBe IN_PROGRESS
 
-        stateMachine.sendEvent(DELIVERED)
-        stateMachine.actualState shouldBe DONE
-    }
-}) {
+            stateMachine.sendEvent(DELIVERED)
+            stateMachine.actualState shouldBe DONE
+        }
+    },
+) {
     enum class OrderState {
-        NEW, IN_PROGRESS, DONE, CANCELLED
+        NEW,
+        IN_PROGRESS,
+        DONE,
+        CANCELLED,
     }
 
     enum class OrderEvent {
-        PAYMENT_ARRIVED, DELIVERED, CUSTOMER_CANCELLATION
+        PAYMENT_ARRIVED,
+        DELIVERED,
+        CUSTOMER_CANCELLATION,
     }
 
     data class Order(

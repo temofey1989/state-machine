@@ -16,7 +16,6 @@ import java.util.UUID.randomUUID
  */
 @StateMachineDslMarker
 class StateMachineConfigurationBuilder<S, E> {
-
     /**
      * ID of the State Machine.
      */
@@ -53,7 +52,10 @@ class StateMachineConfigurationBuilder<S, E> {
      * @param sourceState Source state for transitions.
      * @param prepareTransitions Transitions builder for source state.
      */
-    fun from(sourceState: S, prepareTransitions: TransitionsBuilder<S, E>.() -> Unit) {
+    fun from(
+        sourceState: S,
+        prepareTransitions: TransitionsBuilder<S, E>.() -> Unit,
+    ) {
         val builder = TransitionsBuilder<S, E>(sourceState)
         builder.prepareTransitions()
         transitions += builder.build()
@@ -88,16 +90,18 @@ class StateMachineConfigurationBuilder<S, E> {
      * @see StateMachineConfiguration
      * @see DefaultStateMachine
      */
-    fun build() = StateMachineConfiguration(
-        id = id,
-        initialState = initialState ?: throw IllegalStateException("Initial state should be declared."),
-        finalStates = finalStates.apply {
-            if (finalStates.isEmpty()) {
-                throw IllegalStateException("Final state(s) should be defined.")
-            }
-        },
-        transitions = transitions,
-        globalGuards = globalGuards,
-        globalActions = globalActions
-    )
+    fun build() =
+        StateMachineConfiguration(
+            id = id,
+            initialState = initialState ?: throw IllegalStateException("Initial state should be declared."),
+            finalStates =
+            finalStates.apply {
+                if (finalStates.isEmpty()) {
+                    throw IllegalStateException("Final state(s) should be defined.")
+                }
+            },
+            transitions = transitions,
+            globalGuards = globalGuards,
+            globalActions = globalActions,
+        )
 }

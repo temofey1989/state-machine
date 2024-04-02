@@ -8,7 +8,6 @@ import io.justdevit.libs.statemachine.action.TransitionAction
  * @see StateMachineConfigurationBuilder.globalActions()
  */
 class TransitionActionBuilder<S, E> {
-
     private val actions = mutableListOf<TransitionAction<S, E>>()
 
     /**
@@ -33,5 +32,4 @@ class TransitionActionBuilder<S, E> {
      * @return List of transition actions.
      */
     fun build(): List<TransitionAction<S, E>> = actions
-
 }

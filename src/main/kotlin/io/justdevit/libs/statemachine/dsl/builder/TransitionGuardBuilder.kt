@@ -8,7 +8,6 @@ import io.justdevit.libs.statemachine.guard.TransitionGuard
  * @see StateMachineConfigurationBuilder.globalGuards()
  */
 class TransitionGuardBuilder<S, E> {
-
     private val guards = mutableListOf<TransitionGuard<S, E>>()
 
     /**
@@ -33,5 +32,4 @@ class TransitionGuardBuilder<S, E> {
      * @return List of transition guards.
      */
     fun build(): List<TransitionGuard<S, E>> = guards
-
 }

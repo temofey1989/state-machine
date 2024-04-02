@@ -15,11 +15,9 @@ import io.justdevit.libs.statemachine.dsl.builder.StateMachineConfigurationBuild
  * @param configure Configure function of the State Machine.
  */
 fun <S, E> stateMachine(
-
     state: S? = null,
     startup: StateMachineStartup = AUTO,
-    configure: StateMachineConfigurationBuilder<S, E>.() -> Unit
-
+    configure: StateMachineConfigurationBuilder<S, E>.() -> Unit,
 ): StateMachine<S, E> {
     val configBuilder = StateMachineConfigurationBuilder<S, E>()
     configBuilder.configure()

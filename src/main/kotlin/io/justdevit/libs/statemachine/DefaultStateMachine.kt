@@ -11,7 +11,6 @@ import java.util.UUID
  * @see StateMachine
  */
 class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S, E>) : StateMachine<S, E> {
-
     private val transitionMap = config.transitions.associateBy { Pair(it.sourceState, it.event) }
     private var state: S = config.initialState
     private var started: Boolean = false
@@ -42,21 +41,25 @@ class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S,
         this.state = state ?: config.initialState
     }
 
-    override fun sendEvent(event: E, parameters: Map<String, Any>): EventResult {
+    override fun sendEvent(
+        event: E,
+        parameters: Map<String, Any>,
+    ): EventResult {
         checkStateMachineStarted()
-        val transition = transitionMap[actualState to event]
-            ?: return RejectedResult("No transition from $actualState with $event exists.")
-        val context = TransitionContext(
-            sourceState = actualState,
-            targetState = transition.targetState,
-            event = event,
-            stateMachine = this,
-            parameters = parameters
-        )
+        val transition =
+            transitionMap[actualState to event]
+                ?: return RejectedResult("No transition from $actualState with $event exists.")
+        val context =
+            TransitionContext(
+                sourceState = actualState,
+                targetState = transition.targetState,
+                event = event,
+                stateMachine = this,
+                parameters = parameters,
+            )
         val guards = config.globalGuards + transition.config.guards
         val actions = config.globalActions + transition.config.actions
         try {
-
             actions.execBeforeExit(context)
             guards.ifAnyDeclinedOnExit(context) {
                 return RejectedResult("${it::class.simpleName} has declined exit on $event for state $actualState")
@@ -102,17 +105,21 @@ class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S,
             it.afterExit(context)
         }
 
-    private inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnExit(context: TransitionContext<S, E>, onReject: (TransitionGuard<S, E>) -> Unit) =
-        forEach {
-            if (!it.onExit(context)) {
-                onReject(it)
-            }
+    private inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnExit(
+        context: TransitionContext<S, E>,
+        onReject: (TransitionGuard<S, E>) -> Unit,
+    ) = forEach {
+        if (!it.onExit(context)) {
+            onReject(it)
         }
+    }
 
-    private inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnEntry(context: TransitionContext<S, E>, onReject: (TransitionGuard<S, E>) -> Unit) =
-        forEach {
-            if (!it.onEntry(context)) {
-                onReject(it)
-            }
+    private inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnEntry(
+        context: TransitionContext<S, E>,
+        onReject: (TransitionGuard<S, E>) -> Unit,
+    ) = forEach {
+        if (!it.onEntry(context)) {
+            onReject(it)
         }
+    }
 }
