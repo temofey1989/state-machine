@@ -18,7 +18,7 @@ This will have a positive impact for better understanding of the code and better
 ```xml
 
 <dependency>
-    <groupId>io.justdevit.libs</groupId>
+  <groupId>io.justdevit.tools</groupId>
     <artifactId>state-machine</artifactId>
     <version>${state-machine.version}</version>
 </dependency>
@@ -27,13 +27,13 @@ This will have a positive impact for better understanding of the code and better
 ### Gradle
 
 ```groovy
-implementation group: 'io.justdevit.libs', name: 'state-machine', version: $stateMachineVersion
+implementation group: 'io.justdevit.tools', name: 'state-machine', version: $stateMachineVersion
 ```
 
 ### Gradle (kt)
 
 ```kotlin
-implementation("io.justdevit.libs:state-machine:$stateMachineVersion")
+implementation("io.justdevit.tools:state-machine:$stateMachineVersion")
 ```
 
 ---
