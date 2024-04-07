@@ -26,10 +26,7 @@ data class TransitionsBuilder<S, E>(val sourceState: S) {
      * @param event Event of the transition.
      * @param configure Configurer for transition.
      */
-    fun Pair<S, S>.with(
-        event: E,
-        configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null,
-    ) {
+    fun Pair<S, S>.with(event: E, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null) {
         transitions +=
             Transition(
                 sourceState = first,
@@ -39,8 +36,7 @@ data class TransitionsBuilder<S, E>(val sourceState: S) {
                 TransitionConfigurationBuilder<S, E>()
                     .also {
                         configure?.let { invoke -> it.invoke() }
-                    }
-                    .build(),
+                    }.build(),
             )
     }
 

@@ -21,7 +21,9 @@ fun <S, E> stateMachine(
 ): StateMachine<S, E> {
     val configBuilder = StateMachineConfigurationBuilder<S, E>()
     configBuilder.configure()
-    return DefaultStateMachine(configBuilder.build()).also {
+    return DefaultStateMachine(
+        config = configBuilder.build(),
+    ).also {
         if (AUTO == startup) {
             it.start(state)
         }

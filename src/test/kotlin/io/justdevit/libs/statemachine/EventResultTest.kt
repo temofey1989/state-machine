@@ -3,122 +3,125 @@ package io.justdevit.libs.statemachine
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
-internal class EventResultTest : FreeSpec({
+internal class EventResultTest :
+    FreeSpec(
+        {
 
-    "Success result tests" - {
+            "Success result tests" - {
 
-        val result: EventResult = SuccessResult
+                val result: EventResult = SuccessResult
 
-        "Should have correct extension attribute" {
-            result.successful shouldBe true
-        }
+                "Should have correct extension attribute" {
+                    result.successful shouldBe true
+                }
 
-        "Should be able to execute action on success" {
-            var variable = false
+                "Should be able to execute action on success" {
+                    var variable = false
 
-            result.ifSuccess {
-                variable = true
+                    result.ifSuccess {
+                        variable = true
+                    }
+
+                    variable shouldBe true
+                }
+
+                "Should be able to ignore execute action on rejection" {
+                    var variable = false
+
+                    result.ifRejected {
+                        variable = true
+                    }
+
+                    variable shouldBe false
+                }
+
+                "Should be able to ignore execute action on failure" {
+                    var variable = false
+
+                    result.ifFailed {
+                        variable = true
+                    }
+
+                    variable shouldBe false
+                }
             }
 
-            variable shouldBe true
-        }
+            "Rejected result tests" - {
 
-        "Should be able to ignore execute action on rejection" {
-            var variable = false
+                val result: EventResult = RejectedResult("TEST")
 
-            result.ifRejected {
-                variable = true
+                "Should have correct extension attribute" {
+                    result.successful shouldBe false
+                }
+
+                "Should be able to execute ignore action on success" {
+                    var variable = false
+
+                    result.ifSuccess {
+                        variable = true
+                    }
+
+                    variable shouldBe false
+                }
+
+                "Should be able to execute action on rejection" {
+                    var variable = false
+
+                    result.ifRejected {
+                        variable = true
+                    }
+
+                    variable shouldBe true
+                }
+
+                "Should be able to execute ignore action on failure" {
+                    var variable = false
+
+                    result.ifFailed {
+                        variable = true
+                    }
+
+                    variable shouldBe false
+                }
             }
 
-            variable shouldBe false
-        }
+            "Failed result tests" - {
 
-        "Should be able to ignore execute action on failure" {
-            var variable = false
+                val result: EventResult = FailedResult(IllegalArgumentException("TEST"))
 
-            result.ifFailed {
-                variable = true
+                "Should have correct extension attribute" {
+                    result.successful shouldBe false
+                }
+
+                "Should be able to execute ignore action on success" {
+                    var variable = false
+
+                    result.ifSuccess {
+                        variable = true
+                    }
+
+                    variable shouldBe false
+                }
+
+                "Should be able to execute ignore action on rejection" {
+                    var variable = false
+
+                    result.ifRejected {
+                        variable = true
+                    }
+
+                    variable shouldBe false
+                }
+
+                "Should be able to execute action on failure" {
+                    var variable = false
+
+                    result.ifFailed {
+                        variable = true
+                    }
+
+                    variable shouldBe true
+                }
             }
-
-            variable shouldBe false
-        }
-    }
-
-    "Rejected result tests" - {
-
-        val result: EventResult = RejectedResult("TEST")
-
-        "Should have correct extension attribute" {
-            result.successful shouldBe false
-        }
-
-        "Should be able to execute ignore action on success" {
-            var variable = false
-
-            result.ifSuccess {
-                variable = true
-            }
-
-            variable shouldBe false
-        }
-
-        "Should be able to execute action on rejection" {
-            var variable = false
-
-            result.ifRejected {
-                variable = true
-            }
-
-            variable shouldBe true
-        }
-
-        "Should be able to execute ignore action on failure" {
-            var variable = false
-
-            result.ifFailed {
-                variable = true
-            }
-
-            variable shouldBe false
-        }
-    }
-
-    "Failed result tests" - {
-
-        val result: EventResult = FailedResult(IllegalArgumentException("TEST"))
-
-        "Should have correct extension attribute" {
-            result.successful shouldBe false
-        }
-
-        "Should be able to execute ignore action on success" {
-            var variable = false
-
-            result.ifSuccess {
-                variable = true
-            }
-
-            variable shouldBe false
-        }
-
-        "Should be able to execute ignore action on rejection" {
-            var variable = false
-
-            result.ifRejected {
-                variable = true
-            }
-
-            variable shouldBe false
-        }
-
-        "Should be able to execute action on failure" {
-            var variable = false
-
-            result.ifFailed {
-                variable = true
-            }
-
-            variable shouldBe true
-        }
-    }
-})
+        },
+    )

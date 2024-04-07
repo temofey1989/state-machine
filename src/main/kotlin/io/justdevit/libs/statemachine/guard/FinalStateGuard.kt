@@ -8,7 +8,7 @@ import io.justdevit.libs.statemachine.dsl.builder.TransitionGuardBuilder
  * If so, the guard rejects the transition.
  */
 class FinalStateGuard<S, E> : TransitionGuard<S, E> {
-    override fun onExit(context: TransitionContext<S, E>) = !context.stateMachine.finished
+    override suspend fun onExit(context: TransitionContext<S, E>) = !context.stateMachine.finished
 }
 
 /**

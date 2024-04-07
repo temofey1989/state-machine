@@ -41,10 +41,7 @@ class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S,
         this.state = state ?: config.initialState
     }
 
-    override fun sendEvent(
-        event: E,
-        parameters: Map<String, Any>,
-    ): EventResult {
+    override suspend fun sendEvent(event: E, parameters: Map<String, Any>): EventResult {
         checkStateMachineStarted()
         val transition =
             transitionMap[actualState to event]
@@ -54,7 +51,7 @@ class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S,
                 sourceState = actualState,
                 targetState = transition.targetState,
                 event = event,
-                stateMachine = this,
+                stateMachine = this@DefaultStateMachine,
                 parameters = parameters,
             )
         val guards = config.globalGuards + transition.config.guards
@@ -62,13 +59,13 @@ class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S,
         try {
             actions.execBeforeExit(context)
             guards.ifAnyDeclinedOnExit(context) {
-                return RejectedResult("${it::class.simpleName} has declined exit on $event for state $actualState")
+                return RejectedResult("${it::class.simpleName} has declined exit on $event for state $actualState.")
             }
             actions.execAfterExit(context)
 
             actions.execBeforeEntry(context)
             guards.ifAnyDeclinedOnEntry(context) {
-                return RejectedResult("${it::class.simpleName} has declined entry on $event for state $actualState")
+                return RejectedResult("${it::class.simpleName} has declined entry on $event for state $actualState.")
             }
             state = transition.targetState
             actions.execAfterEntry(context)
@@ -85,41 +82,37 @@ class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S,
         }
     }
 
-    private fun List<TransitionAction<S, E>>.execBeforeEntry(context: TransitionContext<S, E>) =
+    private suspend fun List<TransitionAction<S, E>>.execBeforeEntry(context: TransitionContext<S, E>) =
         forEach {
             it.beforeEntry(context)
         }
 
-    private fun List<TransitionAction<S, E>>.execAfterEntry(context: TransitionContext<S, E>) =
+    private suspend fun List<TransitionAction<S, E>>.execAfterEntry(context: TransitionContext<S, E>) =
         forEach {
             it.afterEntry(context)
         }
 
-    private fun List<TransitionAction<S, E>>.execBeforeExit(context: TransitionContext<S, E>) =
+    private suspend fun List<TransitionAction<S, E>>.execBeforeExit(context: TransitionContext<S, E>) =
         forEach {
             it.beforeExit(context)
         }
 
-    private fun List<TransitionAction<S, E>>.execAfterExit(context: TransitionContext<S, E>) =
+    private suspend fun List<TransitionAction<S, E>>.execAfterExit(context: TransitionContext<S, E>) =
         forEach {
             it.afterExit(context)
         }
 
-    private inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnExit(
-        context: TransitionContext<S, E>,
-        onReject: (TransitionGuard<S, E>) -> Unit,
-    ) = forEach {
-        if (!it.onExit(context)) {
-            onReject(it)
+    private suspend inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnExit(context: TransitionContext<S, E>, onReject: (TransitionGuard<S, E>) -> Unit) =
+        forEach {
+            if (!it.onExit(context)) {
+                onReject(it)
+            }
         }
-    }
 
-    private inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnEntry(
-        context: TransitionContext<S, E>,
-        onReject: (TransitionGuard<S, E>) -> Unit,
-    ) = forEach {
-        if (!it.onEntry(context)) {
-            onReject(it)
+    private suspend inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnEntry(context: TransitionContext<S, E>, onReject: (TransitionGuard<S, E>) -> Unit) =
+        forEach {
+            if (!it.onEntry(context)) {
+                onReject(it)
+            }
         }
-    }
 }

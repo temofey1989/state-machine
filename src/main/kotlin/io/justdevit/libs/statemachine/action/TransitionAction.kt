@@ -14,7 +14,7 @@ interface TransitionAction<S, E> {
      *
      * @param context Context of the transition.
      */
-    fun beforeEntry(context: TransitionContext<S, E>) {
+    suspend fun beforeEntry(context: TransitionContext<S, E>) {
         // noop
     }
 
@@ -24,7 +24,7 @@ interface TransitionAction<S, E> {
      *
      * @param context Context of the transition.
      */
-    fun afterEntry(context: TransitionContext<S, E>) {
+    suspend fun afterEntry(context: TransitionContext<S, E>) {
         // noop
     }
 
@@ -34,7 +34,7 @@ interface TransitionAction<S, E> {
      *
      * @param context Context of the transition.
      */
-    fun beforeExit(context: TransitionContext<S, E>) {
+    suspend fun beforeExit(context: TransitionContext<S, E>) {
         // noop
     }
 
@@ -44,7 +44,7 @@ interface TransitionAction<S, E> {
      *
      * @param context Context of the transition.
      */
-    fun afterExit(context: TransitionContext<S, E>) {
+    suspend fun afterExit(context: TransitionContext<S, E>) {
         // noop
     }
 }

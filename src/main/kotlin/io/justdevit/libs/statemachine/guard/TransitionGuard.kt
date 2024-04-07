@@ -12,7 +12,7 @@ interface TransitionGuard<S, E> {
      * @param context Context of the transition.
      * @return true - if the transition is possible. Otherwise, returns false.
      */
-    fun onEntry(context: TransitionContext<S, E>): Boolean = true
+    suspend fun onEntry(context: TransitionContext<S, E>): Boolean = true
 
     /**
      * Checks if it is possible to leave actual state.
@@ -20,5 +20,5 @@ interface TransitionGuard<S, E> {
      * @param context Context of the transition.
      * @return true - if the transition is possible. Otherwise, returns false.
      */
-    fun onExit(context: TransitionContext<S, E>): Boolean = true
+    suspend fun onExit(context: TransitionContext<S, E>): Boolean = true
 }

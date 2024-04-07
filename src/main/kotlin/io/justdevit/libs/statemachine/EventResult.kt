@@ -38,10 +38,7 @@ val EventResult.successful: Boolean
     get() =
         when (this) {
             is SuccessResult -> true
-
-            is RejectedResult,
-            is FailedResult,
-            -> false
+            is RejectedResult, is FailedResult -> false
         }
 
 /**

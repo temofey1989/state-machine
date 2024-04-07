@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.9.22"
-    id("org.jmailen.kotlinter") version "4.1.1"
+    id("org.jmailen.kotlinter") version "4.3.0"
 }
 
 repositories {
@@ -14,10 +14,13 @@ repositories {
 }
 
 val kotestVersion: String by project
+val kotlinCoroutinesVersion: String by project
 val mockkVersion: String by project
 
 dependencies {
     implementation(kotlin("stdlib"))
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$kotlinCoroutinesVersion")
 
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
@@ -44,11 +47,5 @@ tasks {
         testLogging {
             events(PASSED, FAILED, SKIPPED)
         }
-    }
-
-    formatKotlin {
-    }
-
-    lintKotlin {
     }
 }

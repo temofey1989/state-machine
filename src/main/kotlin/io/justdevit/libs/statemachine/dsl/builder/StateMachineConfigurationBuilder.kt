@@ -52,10 +52,7 @@ class StateMachineConfigurationBuilder<S, E> {
      * @param sourceState Source state for transitions.
      * @param prepareTransitions Transitions builder for source state.
      */
-    fun from(
-        sourceState: S,
-        prepareTransitions: TransitionsBuilder<S, E>.() -> Unit,
-    ) {
+    fun from(sourceState: S, prepareTransitions: TransitionsBuilder<S, E>.() -> Unit) {
         val builder = TransitionsBuilder<S, E>(sourceState)
         builder.prepareTransitions()
         transitions += builder.build()

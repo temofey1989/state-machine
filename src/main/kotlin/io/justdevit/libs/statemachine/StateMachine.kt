@@ -1,6 +1,9 @@
 package io.justdevit.libs.statemachine
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.util.UUID
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Represents the State Machine.
@@ -43,8 +46,18 @@ interface StateMachine<S, in E> {
      * @param parameters Metadata parameter map.
      * @throws IllegalStateException In case of the State Machine is not started.
      */
-    fun sendEvent(
+    suspend fun sendEvent(event: E, parameters: Map<String, Any> = emptyMap()): EventResult
+
+    /**
+     * Sends the event to the State Machine.
+     *
+     * @param event Event for the State Machine. Should be of generic type.
+     * @param parameters Metadata parameter map.
+     * @throws IllegalStateException In case of the State Machine is not started.
+     */
+    fun sendEventAndAwait(
         event: E,
         parameters: Map<String, Any> = emptyMap(),
-    ): EventResult
+        context: CoroutineContext = Dispatchers.Default,
+    ): EventResult = runBlocking(context) { sendEvent(event, parameters) }
 }
