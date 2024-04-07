@@ -32,8 +32,7 @@ data class TransitionsBuilder<S, E>(val sourceState: S) {
                 sourceState = first,
                 targetState = second,
                 event = event,
-                config =
-                TransitionConfigurationBuilder<S, E>()
+                config = TransitionConfigurationBuilder<S, E>()
                     .also {
                         configure?.let { invoke -> it.invoke() }
                     }.build(),

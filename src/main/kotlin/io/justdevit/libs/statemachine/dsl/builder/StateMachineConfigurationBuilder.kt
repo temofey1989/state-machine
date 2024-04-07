@@ -91,8 +91,7 @@ class StateMachineConfigurationBuilder<S, E> {
         StateMachineConfiguration(
             id = id,
             initialState = initialState ?: throw IllegalStateException("Initial state should be declared."),
-            finalStates =
-            finalStates.apply {
+            finalStates = finalStates.apply {
                 if (finalStates.isEmpty()) {
                     throw IllegalStateException("Final state(s) should be defined.")
                 }
