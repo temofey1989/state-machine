@@ -10,7 +10,6 @@ import io.justdevit.tools.statemachine.StateMachineTest.OrderState.NEW
 import io.justdevit.tools.statemachine.action.TransitionAction
 import io.justdevit.tools.statemachine.dsl.stateMachine
 import io.justdevit.tools.statemachine.guard.TransitionGuard
-import io.justdevit.tools.statemachine.guard.finalStateGuard
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import java.math.BigDecimal
@@ -36,7 +35,6 @@ internal class StateMachineTest :
                             +LogAction()
                         }
                         globalGuards {
-                            finalStateGuard()
                         }
 
                         from(NEW) {

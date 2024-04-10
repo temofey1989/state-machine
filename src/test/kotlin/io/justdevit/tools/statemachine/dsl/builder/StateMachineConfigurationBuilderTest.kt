@@ -3,10 +3,13 @@ package io.justdevit.tools.statemachine.dsl.builder
 import io.justdevit.tools.statemachine.Transition
 import io.justdevit.tools.statemachine.TransitionConfiguration
 import io.justdevit.tools.statemachine.action.TransitionAction
+import io.justdevit.tools.statemachine.guard.FinalStateGuard
 import io.justdevit.tools.statemachine.guard.TransitionGuard
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldHaveSingleElement
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.instanceOf
 import io.mockk.mockk
 import org.junit.jupiter.api.assertThrows
 import java.util.UUID.randomUUID
@@ -62,7 +65,9 @@ internal class StateMachineConfigurationBuilderTest :
                             config = TransitionConfiguration(),
                         )
                     globalActions shouldHaveSingleElement transitionAction
-                    globalGuards shouldHaveSingleElement transitionGuard
+                    globalGuards shouldHaveSize 2
+                    globalGuards[0] shouldBe instanceOf<FinalStateGuard<String, String>>()
+                    globalGuards[1] shouldBe transitionGuard
                 }
             }
         },

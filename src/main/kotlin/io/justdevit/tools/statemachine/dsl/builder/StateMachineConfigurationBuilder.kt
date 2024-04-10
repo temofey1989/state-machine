@@ -5,6 +5,7 @@ import io.justdevit.tools.statemachine.StateMachineConfiguration
 import io.justdevit.tools.statemachine.Transition
 import io.justdevit.tools.statemachine.action.TransitionAction
 import io.justdevit.tools.statemachine.dsl.StateMachineDslMarker
+import io.justdevit.tools.statemachine.guard.FinalStateGuard
 import io.justdevit.tools.statemachine.guard.TransitionGuard
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -34,7 +35,9 @@ class StateMachineConfigurationBuilder<S, E> {
     /**
      * Guards for each transition.
      */
-    private val globalGuards = mutableListOf<TransitionGuard<S, E>>()
+    private val globalGuards = mutableListOf<TransitionGuard<S, E>>(
+        FinalStateGuard(),
+    )
 
     /**
      * Actions for each transition.

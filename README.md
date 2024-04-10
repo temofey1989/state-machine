@@ -84,7 +84,7 @@ stateMachine<States, Events> {
     ...
 
     globalGuards {
-        +FinalStateGuard()
+        +MyGuard()
     }
 
     ...
@@ -273,7 +273,6 @@ val orderStateMachine = stateMachine<OrderState, OrderEvent>(state = order.state
     }
 
     globalGuards { // Defining guards for each transition.
-        finalStateGuard()
     }
 
     from(NEW) {
