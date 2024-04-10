@@ -1,5 +1,6 @@
 package io.justdevit.tools.statemachine.dsl.builder
 
+import io.justdevit.tools.statemachine.TransitionContext
 import io.justdevit.tools.statemachine.guard.TransitionGuard
 
 /**
@@ -24,6 +25,18 @@ class TransitionGuardBuilder<S, E> {
      */
     operator fun TransitionGuard<S, E>.unaryPlus() {
         guard(this)
+    }
+
+    fun onEntry(action: suspend (TransitionContext<S, E>) -> Boolean) {
+        guards += object : TransitionGuard<S, E> {
+            override suspend fun onEntry(context: TransitionContext<S, E>) = action(context)
+        }
+    }
+
+    fun onExit(action: suspend (TransitionContext<S, E>) -> Boolean) {
+        guards += object : TransitionGuard<S, E> {
+            override suspend fun onExit(context: TransitionContext<S, E>) = action(context)
+        }
     }
 
     /**
