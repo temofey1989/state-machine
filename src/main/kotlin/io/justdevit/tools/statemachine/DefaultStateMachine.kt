@@ -10,7 +10,7 @@ import java.util.UUID
  * @param config State Machine configuration.
  * @see StateMachine
  */
-class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S, E>) : StateMachine<S, E> {
+open class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S, E>) : StateMachine<S, E> {
     private val transitionMap = config.transitions.associateBy { Pair(it.sourceState, it.event) }
     private var state: S = config.initialState
     private var started: Boolean = false
@@ -59,13 +59,13 @@ class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S,
         try {
             actions.execBeforeExit(context)
             guards.ifAnyDeclinedOnExit(context) {
-                return RejectedResult("${it::class.simpleName} has declined exit on $event for state $actualState.")
+                return RejectedResult("${this@ifAnyDeclinedOnExit::class.simpleName} has declined exit on $event for state $actualState.")
             }
             actions.execAfterExit(context)
 
             actions.execBeforeEntry(context)
             guards.ifAnyDeclinedOnEntry(context) {
-                return RejectedResult("${it::class.simpleName} has declined entry on $event for state $actualState.")
+                return RejectedResult("${this@ifAnyDeclinedOnEntry::class.simpleName} has declined entry on $event for state $actualState.")
             }
             state = transition.targetState
             actions.execAfterEntry(context)
@@ -102,17 +102,11 @@ class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S,
             it.afterExit(context)
         }
 
-    private suspend inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnExit(context: TransitionContext<S, E>, onReject: (TransitionGuard<S, E>) -> Unit) =
-        forEach {
-            if (!it.onExit(context)) {
-                onReject(it)
-            }
-        }
+    private suspend inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnExit(context: TransitionContext<S, E>, onReject: TransitionGuard<S, E>.() -> Unit) =
+        firstOrNull { !it.onExit(context) }
+            ?.onReject()
 
-    private suspend inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnEntry(context: TransitionContext<S, E>, onReject: (TransitionGuard<S, E>) -> Unit) =
-        forEach {
-            if (!it.onEntry(context)) {
-                onReject(it)
-            }
-        }
+    private suspend inline fun List<TransitionGuard<S, E>>.ifAnyDeclinedOnEntry(context: TransitionContext<S, E>, onReject: TransitionGuard<S, E>.() -> Unit) =
+        firstOrNull { !it.onEntry(context) }
+            ?.onReject()
 }
