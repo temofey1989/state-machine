@@ -23,5 +23,5 @@ data class TransitionContext<S, E>(
     /**
      * Parameters of the execution.
      */
-    val parameters: Map<String, Any> = emptyMap(),
+    val parameters: TransitionParameters = TransitionParameters(),
 )

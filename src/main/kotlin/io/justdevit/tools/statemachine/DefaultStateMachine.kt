@@ -41,7 +41,7 @@ open class DefaultStateMachine<S, E>(private val config: StateMachineConfigurati
         this.state = state ?: config.initialState
     }
 
-    override suspend fun sendEvent(event: E, parameters: Map<String, Any>): EventResult {
+    override suspend fun sendEvent(event: E, parameters: TransitionParameters): EventResult {
         checkStateMachineStarted()
         val transition =
             transitionMap[actualState to event]

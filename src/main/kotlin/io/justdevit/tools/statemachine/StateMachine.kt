@@ -43,10 +43,45 @@ interface StateMachine<S, in E> {
      * Sends the event to the State Machine.
      *
      * @param event Event for the State Machine. Should be of generic type.
+     * @param parameters Parameters for the transition.
+     * @throws IllegalStateException In case of the State Machine is not started.
+     */
+    suspend fun sendEvent(event: E, parameters: TransitionParameters = TransitionParameters()): EventResult
+
+    /**
+     * Sends the event to the State Machine.
+     *
+     * @param event Event for the State Machine. Should be of generic type.
      * @param parameters Metadata parameter map.
      * @throws IllegalStateException In case of the State Machine is not started.
      */
-    suspend fun sendEvent(event: E, parameters: Map<String, Any> = emptyMap()): EventResult
+    suspend fun sendEvent(event: E, parameters: Map<String, Any>): EventResult = sendEvent(event, TransitionParameters(parameters))
+
+    /**
+     * Sends the event to the State Machine with custom transition parameters.
+     *
+     * @param event Event for the State Machine. Should be of generic type.
+     * @param parametersBuilder A lambda function that builds the parameters map using.
+     * @return The result of the event processing as an [EventResult] object.
+     * @throws IllegalStateException In case of the State Machine is not started.
+     */
+    suspend fun sendEvent(event: E, parametersBuilder: MutableMap<String, Any>.() -> Unit): EventResult {
+        val parameters = mutableMapOf<String, Any>().apply(parametersBuilder).toMap()
+        return sendEvent(event, parameters)
+    }
+
+    /**
+     * Sends the event to the State Machine.
+     *
+     * @param event Event for the State Machine. Should be of generic type.
+     * @param parameters Parameters for the transition.
+     * @throws IllegalStateException In case of the State Machine is not started.
+     */
+    fun sendEventAndAwait(
+        event: E,
+        context: CoroutineContext = Dispatchers.Default,
+        parameters: TransitionParameters = TransitionParameters(),
+    ): EventResult = runBlocking(context) { sendEvent(event, parameters) }
 
     /**
      * Sends the event to the State Machine.
@@ -57,7 +92,24 @@ interface StateMachine<S, in E> {
      */
     fun sendEventAndAwait(
         event: E,
-        parameters: Map<String, Any> = emptyMap(),
         context: CoroutineContext = Dispatchers.Default,
-    ): EventResult = runBlocking(context) { sendEvent(event, parameters) }
+        parameters: Map<String, Any>,
+    ): EventResult = sendEventAndAwait(event, context, TransitionParameters(parameters))
+
+    /**
+     * Sends the event to the State Machine and waits for the result.
+     *
+     * @param event Event for the State Machine. Should be of generic type.
+     * @param context The coroutine context to run the sendEvent method on. Defaults to Dispatchers.Default.
+     * @param parametersBuilder A lambda function that builds the parameters map using.
+     * @return The result of the event processing as an [EventResult] object.
+     */
+    fun sendEventAndAwait(
+        event: E,
+        context: CoroutineContext = Dispatchers.Default,
+        parametersBuilder: MutableMap<String, Any>.() -> Unit,
+    ): EventResult {
+        val parameters = mutableMapOf<String, Any>().apply(parametersBuilder).toMap()
+        return sendEventAndAwait(event, context, parameters)
+    }
 }

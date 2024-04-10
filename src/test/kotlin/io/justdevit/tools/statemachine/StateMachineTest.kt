@@ -62,13 +62,10 @@ internal class StateMachineTest :
                         }
                     }
 
-                stateMachine.sendEvent(
-                    PAYMENT_ARRIVED,
-                    mapOf(
-                        "order" to order,
-                        "payment" to Payment(100.toBigDecimal()),
-                    ),
-                )
+                stateMachine.sendEvent(PAYMENT_ARRIVED) {
+                    "order" to order
+                    "payment" to Payment(100.toBigDecimal())
+                }
                 stateMachine.actualState shouldBe IN_PROGRESS
 
                 stateMachine.sendEvent(DELIVERED)

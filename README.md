@@ -127,11 +127,9 @@ With parameters:
 ```kotlin
 val stateMachine = ...
 
-stateMachine.sendEvent(
-    E1, mapOf(
-        "order" to order
-    )
-)
+stateMachine.sendEvent(E1) {
+    "order" to order
+}
 ```
 
 ### Transition Guard
@@ -141,7 +139,7 @@ To create guard, the `TransitionGuard` interface should be implemented.
 
 ```kotlin
 class MyGuard : TransitionGuard<States, Event> {
-    override fun onEntry(context: TransitionContext<States, Events>): Boolean {
+    override suspend fun onEntry(context: TransitionContext<States, Events>): Boolean {
         return ...
     }
 }
@@ -159,7 +157,7 @@ To create action, the `TransitionAction` interface should be implemented.
 
 ```kotlin
 class MyAction : TransitionAction<States, Events> {
-    override fun afterEntry(context: TransitionContext<States, Events>) {
+    override suspend fun afterEntry(context: TransitionContext<States, Events>) {
         ...
     }
 }
@@ -206,32 +204,32 @@ Let's define them:
 
 ```kotlin
 class PersistPayment : TransitionAction<OrderState, OrderEvent> {
-    override fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
+    override suspend fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
         val payment = context.parameters["payment"] as Payment
         ...
     }
 }
 
 class NotifyWarehouse : TransitionAction<OrderState, OrderEvent> {
-    override fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
+    override suspend fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
         ...
     }
 }
 
 class UpdateMonitoringDashboard : TransitionAction<OrderState, OrderEvent> {
-    override fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
+    override suspend fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
         ...
     }
 }
 
 class SendCancellationEmail : TransitionAction<OrderState, OrderEvent> {
-    override fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
+    override suspend fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
         ...
     }
 }
 
 class SendThankYouEmail : TransitionAction<OrderState, OrderEvent> {
-    override fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
+    override suspend fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
         ...
     }
 }
@@ -241,7 +239,7 @@ We also need some check that payment is correct. So, let's create a guard for th
 
 ```kotlin
 class RejectWrongPaymentAmount : TransitionGuard<OrderState, OrderEvent> {
-    override fun onEntry(context: TransitionContext<OrderState, OrderEvent>): Boolean {
+    override suspend fun onEntry(context: TransitionContext<OrderState, OrderEvent>): Boolean {
         val order = context.parameters["order"] as Order
         val payment = context.parameters["payment"] as Payment
         return order.price == payment.amount
@@ -253,11 +251,11 @@ Also, for technical purposes we will need logging action:
 
 ```kotlin
 class LogAction : TransitionAction<OrderState, OrderEvent> {
-    override fun beforeExit(context: TransitionContext<OrderState, OrderEvent>) {
+    override suspend fun beforeExit(context: TransitionContext<OrderState, OrderEvent>) {
         println("Trying to move from state ${context.sourceState} to ${context.targetState} with ${context.event}.")
     }
 
-    override fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
+    override suspend fun afterEntry(context: TransitionContext<OrderState, OrderEvent>) {
         println("Moved to state ${context.targetState} from ${context.sourceState} with ${context.event}.")
     }
 }
