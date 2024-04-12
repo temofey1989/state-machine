@@ -41,11 +41,17 @@ open class DefaultStateMachine<S, E>(private val config: StateMachineConfigurati
         this.state = state ?: config.initialState
     }
 
-    override suspend fun sendEvent(event: E, parameters: TransitionParameters): EventResult {
+    override suspend fun sendEvent(event: E, parameters: TransitionParameters): TransitionResult<S, E> {
         checkStateMachineStarted()
         val transition =
             transitionMap[actualState to event]
-                ?: return RejectedResult("No transition from $actualState with $event exists.")
+                ?: return RejectedResult(
+                    transition = UndefinedTransition(
+                        sourceState = actualState,
+                        event = event,
+                    ),
+                    reason = "No transition from $actualState with $event exists.",
+                )
         val context =
             TransitionContext(
                 sourceState = actualState,
@@ -59,20 +65,26 @@ open class DefaultStateMachine<S, E>(private val config: StateMachineConfigurati
         try {
             actions.execBeforeExit(context)
             guards.ifAnyDeclinedOnExit(context) {
-                return RejectedResult("${this@ifAnyDeclinedOnExit::class.simpleName} has declined exit on $event for state $actualState.")
+                return RejectedResult(
+                    transition = transition,
+                    reason = "${this@ifAnyDeclinedOnExit::class.simpleName} has declined exit on $event for state $actualState.",
+                )
             }
             actions.execAfterExit(context)
 
             actions.execBeforeEntry(context)
             guards.ifAnyDeclinedOnEntry(context) {
-                return RejectedResult("${this@ifAnyDeclinedOnEntry::class.simpleName} has declined entry on $event for state $actualState.")
+                return RejectedResult(
+                    transition = transition,
+                    reason = "${this@ifAnyDeclinedOnEntry::class.simpleName} has declined entry on $event for state $actualState.",
+                )
             }
             state = transition.targetState
             actions.execAfterEntry(context)
 
-            return SuccessResult
-        } catch (e: Throwable) {
-            return FailedResult(e)
+            return SuccessResult(transition = transition)
+        } catch (throwable: Throwable) {
+            return FailedResult(transition = transition, exception = throwable)
         }
     }
 

@@ -69,7 +69,7 @@ internal class DefaultStateMachineTest :
 
                     val result = stateMachine.sendEvent("E1")
 
-                    result shouldBe SuccessResult
+                    result shouldBe instanceOf<SuccessResult<*, *>>()
                     stateMachine.finished shouldBe true
                 }
 
@@ -157,7 +157,7 @@ internal class DefaultStateMachineTest :
 
                     val result = stateMachine.sendEvent("TEST")
 
-                    result shouldBe instanceOf<RejectedResult>()
+                    result shouldBe instanceOf<RejectedResult<*, *>>()
                 }
 
                 "Should return failed result on exception" {
@@ -173,7 +173,7 @@ internal class DefaultStateMachineTest :
 
                     val result = stateMachine.sendEvent("E1")
 
-                    result shouldBe instanceOf<FailedResult>()
+                    result shouldBe instanceOf<FailedResult<*, *>>()
                     with(result as FailedResult) {
                         this.exception shouldBe exception
                     }
@@ -188,7 +188,7 @@ internal class DefaultStateMachineTest :
 
                     val result = stateMachine.sendEvent("E1")
 
-                    result shouldBe SuccessResult
+                    result shouldBe instanceOf<SuccessResult<*, *>>()
                     stateMachine.actualState shouldBe "S1"
                     val slot = slot<TransitionContext<String, String>>()
                     with(context.mocks) {
@@ -222,7 +222,7 @@ internal class DefaultStateMachineTest :
 
                     val result = stateMachine.sendEvent("E1")
 
-                    result shouldBe instanceOf<RejectedResult>()
+                    result shouldBe instanceOf<RejectedResult<*, *>>()
                     with(context.mocks) {
                         coVerify { globalAction.beforeExit(any()) }
                         coVerify { globalGuard.onExit(any()) }
@@ -244,7 +244,7 @@ internal class DefaultStateMachineTest :
 
                     val result = stateMachine.sendEvent("E1")
 
-                    result shouldBe instanceOf<RejectedResult>()
+                    result shouldBe instanceOf<RejectedResult<*, *>>()
                     with(context.mocks) {
                         coVerify { globalAction.beforeExit(any()) }
                         coVerify { globalGuard.onExit(any()) }
@@ -266,7 +266,7 @@ internal class DefaultStateMachineTest :
 
                     val result = stateMachine.sendEvent("E2")
 
-                    result shouldBe instanceOf<RejectedResult>()
+                    result shouldBe instanceOf<RejectedResult<*, *>>()
                     with(context.mocks) {
                         coVerify { globalAction.beforeExit(any()) }
                         coVerify { action.beforeExit(any()) }
@@ -294,7 +294,7 @@ internal class DefaultStateMachineTest :
 
                     val result = stateMachine.sendEvent("E2")
 
-                    result shouldBe instanceOf<RejectedResult>()
+                    result shouldBe instanceOf<RejectedResult<*, *>>()
                     with(context.mocks) {
                         coVerify { globalAction.beforeExit(any()) }
                         coVerify { action.beforeExit(any()) }
@@ -353,12 +353,12 @@ fun buildConfig(configurer: Mocks.() -> Unit = {}): TestContext {
             globalActions = listOf(mocks.globalAction),
             globalGuards = listOf(mocks.globalGuard),
             transitions = listOf(
-                Transition(
+                DefinedTransition(
                     sourceState = "S0",
                     targetState = "S1",
                     event = "E1",
                 ),
-                Transition(
+                DefinedTransition(
                     sourceState = "S0",
                     targetState = "S2",
                     event = "E2",

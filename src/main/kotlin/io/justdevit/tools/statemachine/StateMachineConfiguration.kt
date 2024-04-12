@@ -36,5 +36,5 @@ data class StateMachineConfiguration<S, E>(
     /**
      * List of transitions.
      */
-    val transitions: List<Transition<S, E>>,
+    val transitions: List<DefinedTransition<S, E>>,
 )

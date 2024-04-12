@@ -1,6 +1,6 @@
 package io.justdevit.tools.statemachine.dsl.builder
 
-import io.justdevit.tools.statemachine.Transition
+import io.justdevit.tools.statemachine.DefinedTransition
 import io.justdevit.tools.statemachine.TransitionConfiguration
 import io.justdevit.tools.statemachine.action.TransitionAction
 import io.justdevit.tools.statemachine.guard.FinalStateGuard
@@ -58,7 +58,7 @@ internal class StateMachineConfigurationBuilderTest :
                     initialState shouldBe builder.initialState
                     finalStates shouldBe builder.finalStates
                     transitions shouldHaveSingleElement
-                        Transition(
+                        DefinedTransition(
                             sourceState = "S1",
                             targetState = "S2",
                             event = "TEST",

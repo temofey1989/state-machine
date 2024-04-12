@@ -1,6 +1,6 @@
 package io.justdevit.tools.statemachine.dsl.builder
 
-import io.justdevit.tools.statemachine.Transition
+import io.justdevit.tools.statemachine.DefinedTransition
 import io.justdevit.tools.statemachine.dsl.StateMachineDslMarker
 
 /**
@@ -11,7 +11,7 @@ import io.justdevit.tools.statemachine.dsl.StateMachineDslMarker
  */
 @StateMachineDslMarker
 data class TransitionsBuilder<S, E>(val sourceState: S) {
-    private val transitions: MutableList<Transition<S, E>> = mutableListOf()
+    private val transitions: MutableList<DefinedTransition<S, E>> = mutableListOf()
 
     /**
      * Creates source to target state pair.
@@ -28,7 +28,7 @@ data class TransitionsBuilder<S, E>(val sourceState: S) {
      */
     fun Pair<S, S>.with(event: E, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null) {
         transitions +=
-            Transition(
+            DefinedTransition(
                 sourceState = first,
                 targetState = second,
                 event = event,
@@ -42,5 +42,5 @@ data class TransitionsBuilder<S, E>(val sourceState: S) {
     /**
      * Builds the transition list.
      */
-    fun build(): List<Transition<S, E>> = transitions
+    fun build(): List<DefinedTransition<S, E>> = transitions
 }
