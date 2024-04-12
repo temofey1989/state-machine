@@ -61,12 +61,15 @@ interface StateMachine<S, in E> {
      * Sends the event to the State Machine with custom transition parameters.
      *
      * @param event Event for the State Machine. Should be of generic type.
-     * @param parametersBuilder A lambda function that builds the parameters map using.
+     * @param parametersBuilder A lambda function that builds the parameters using a [TransitionParameters.Builder].
      * @return The result of the event processing as an [EventResult] object.
-     * @throws IllegalStateException In case of the State Machine is not started.
+     * @throws IllegalStateException In case the State Machine is not started.
      */
-    suspend fun sendEvent(event: E, parametersBuilder: MutableMap<String, Any>.() -> Unit): EventResult {
-        val parameters = mutableMapOf<String, Any>().apply(parametersBuilder).toMap()
+    suspend fun sendEvent(event: E, parametersBuilder: TransitionParameters.Builder.() -> Unit): EventResult {
+        val parameters = TransitionParameters
+            .Builder()
+            .apply(parametersBuilder)
+            .build()
         return sendEvent(event, parameters)
     }
 
@@ -101,15 +104,18 @@ interface StateMachine<S, in E> {
      *
      * @param event Event for the State Machine. Should be of generic type.
      * @param context The coroutine context to run the sendEvent method on. Defaults to Dispatchers.Default.
-     * @param parametersBuilder A lambda function that builds the parameters map using.
+     * @param parametersBuilder A lambda function that builds the parameters using a [TransitionParameters.Builder].
      * @return The result of the event processing as an [EventResult] object.
      */
     fun sendEventAndAwait(
         event: E,
         context: CoroutineContext = Dispatchers.Default,
-        parametersBuilder: MutableMap<String, Any>.() -> Unit,
+        parametersBuilder: TransitionParameters.Builder.() -> Unit,
     ): EventResult {
-        val parameters = mutableMapOf<String, Any>().apply(parametersBuilder).toMap()
+        val parameters = TransitionParameters
+            .Builder()
+            .apply(parametersBuilder)
+            .build()
         return sendEventAndAwait(event, context, parameters)
     }
 }
