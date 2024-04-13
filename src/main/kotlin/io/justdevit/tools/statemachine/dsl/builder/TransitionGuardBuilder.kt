@@ -27,15 +27,15 @@ class TransitionGuardBuilder<S, E> {
         guard(this)
     }
 
-    fun onEntry(action: suspend (TransitionContext<S, E>) -> Boolean) {
+    fun onEntry(action: suspend TransitionContext<S, E>.() -> Boolean) {
         guards += object : TransitionGuard<S, E> {
-            override suspend fun onEntry(context: TransitionContext<S, E>) = action(context)
+            override suspend fun onEntry(context: TransitionContext<S, E>) = context.action()
         }
     }
 
-    fun onExit(action: suspend (TransitionContext<S, E>) -> Boolean) {
+    fun onExit(action: suspend TransitionContext<S, E>.() -> Boolean) {
         guards += object : TransitionGuard<S, E> {
-            override suspend fun onExit(context: TransitionContext<S, E>) = action(context)
+            override suspend fun onExit(context: TransitionContext<S, E>) = context.action()
         }
     }
 

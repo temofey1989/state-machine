@@ -27,27 +27,27 @@ class TransitionActionBuilder<S, E> {
         action(this)
     }
 
-    fun beforeEntry(action: suspend (TransitionContext<S, E>) -> Unit) {
+    fun beforeEntry(action: suspend TransitionContext<S, E>.() -> Unit) {
         actions += object : TransitionAction<S, E> {
-            override suspend fun beforeEntry(context: TransitionContext<S, E>) = action(context)
+            override suspend fun beforeEntry(context: TransitionContext<S, E>) = context.action()
         }
     }
 
-    fun afterEntry(action: suspend (TransitionContext<S, E>) -> Unit) {
+    fun afterEntry(action: suspend TransitionContext<S, E>.() -> Unit) {
         actions += object : TransitionAction<S, E> {
-            override suspend fun afterEntry(context: TransitionContext<S, E>) = action(context)
+            override suspend fun afterEntry(context: TransitionContext<S, E>) = context.action()
         }
     }
 
-    fun beforeExit(action: suspend (TransitionContext<S, E>) -> Unit) {
+    fun beforeExit(action: suspend TransitionContext<S, E>.() -> Unit) {
         actions += object : TransitionAction<S, E> {
-            override suspend fun beforeExit(context: TransitionContext<S, E>) = action(context)
+            override suspend fun beforeExit(context: TransitionContext<S, E>) = context.action()
         }
     }
 
-    fun afterExit(action: suspend (TransitionContext<S, E>) -> Unit) {
+    fun afterExit(action: suspend TransitionContext<S, E>.() -> Unit) {
         actions += object : TransitionAction<S, E> {
-            override suspend fun afterExit(context: TransitionContext<S, E>) = action(context)
+            override suspend fun afterExit(context: TransitionContext<S, E>) = context.action()
         }
     }
 
