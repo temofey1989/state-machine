@@ -11,7 +11,15 @@ import java.util.UUID
  * @see StateMachine
  */
 open class DefaultStateMachine<S : Any, E : Any>(private val config: StateMachineConfiguration<S, E>) : StateMachine<S, E> {
-    private val transitionMap = config.transitions.associateBy { Pair(it.sourceState, it.event) }
+
+    private val stateKeyResolver: StateKeyResolver<S> = config.stateKeyResolver
+    private val eventKeyResolver: EventKeyResolver<E> = config.eventKeyResolver
+    private val transitionMap = config.transitions.associateBy {
+        Pair(
+            first = stateKeyResolver(it.sourceState),
+            second = eventKeyResolver(it.event),
+        )
+    }
     private var state: S = config.initialState
     private var started: Boolean = false
 
@@ -44,7 +52,7 @@ open class DefaultStateMachine<S : Any, E : Any>(private val config: StateMachin
     override suspend fun sendEvent(event: E, parameters: TransitionParameters): TransitionResult<S, E> {
         checkStateMachineStarted()
         val transition =
-            transitionMap[actualState to event]
+            transitionMap[stateKeyResolver(actualState) to eventKeyResolver(event)]
                 ?: return RejectedResult(
                     transition = UndefinedTransition(
                         sourceState = actualState,

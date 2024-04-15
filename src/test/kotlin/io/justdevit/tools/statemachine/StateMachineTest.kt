@@ -69,8 +69,63 @@ internal class StateMachineTest :
                 stateMachine.sendEvent(DELIVERED)
                 stateMachine.actualState shouldBe DONE
             }
+
+            "Should be able to move to done (with key resolvers)" {
+                val order =
+                    Order(
+                        id = UUID.randomUUID(),
+                        state = NEW,
+                        price = BigDecimal.valueOf(100),
+                    )
+                val stateMachine =
+                    stateMachine<OrderState, OrderEvent>(state = order.state) {
+                        initialState = NEW
+                        finalStates = setOf(DONE, CANCELLED)
+
+                        eventKeyResolver = { it.name.lowercase() }
+                        stateKeyResolver = { it.name.lowercase() }
+
+                        globalActions {
+                            +LogAction()
+                        }
+                        globalGuards {
+                        }
+
+                        from(NEW) {
+                            to(IN_PROGRESS).with(PAYMENT_ARRIVED) {
+                                +RejectWrongPaymentAmount()
+
+                                +PersistPayment()
+                                +NotifyWarehouse()
+                                +UpdateMonitoringDashboard()
+                            }
+                            to(CANCELLED).with(CUSTOMER_CANCELLATION) {
+                                +SendCancellationEmail()
+                            }
+                        }
+
+                        from(IN_PROGRESS) {
+                            to(DONE).with(DELIVERED) {
+                                +SendThankYouEmail()
+                            }
+                            to(CANCELLED).with(CUSTOMER_CANCELLATION) {
+                                +SendCancellationEmail()
+                            }
+                        }
+                    }
+
+                stateMachine.sendEvent(PAYMENT_ARRIVED) {
+                    "order" to order
+                    "payment" to Payment(100.toBigDecimal())
+                }
+                stateMachine.actualState shouldBe IN_PROGRESS
+
+                stateMachine.sendEvent(DELIVERED)
+                stateMachine.actualState shouldBe DONE
+            }
         },
     ) {
+
     enum class OrderState {
         NEW,
         IN_PROGRESS,

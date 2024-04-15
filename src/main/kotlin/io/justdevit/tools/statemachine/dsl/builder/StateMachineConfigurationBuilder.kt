@@ -2,6 +2,8 @@ package io.justdevit.tools.statemachine.dsl.builder
 
 import io.justdevit.tools.statemachine.DefaultStateMachine
 import io.justdevit.tools.statemachine.DefinedTransition
+import io.justdevit.tools.statemachine.EventKeyResolver
+import io.justdevit.tools.statemachine.StateKeyResolver
 import io.justdevit.tools.statemachine.StateMachineConfiguration
 import io.justdevit.tools.statemachine.action.TransitionAction
 import io.justdevit.tools.statemachine.dsl.StateMachineDslMarker
@@ -31,6 +33,16 @@ class StateMachineConfigurationBuilder<S : Any, E : Any> {
      * Final states of the State Machine.
      */
     var finalStates: Set<S> = emptySet()
+
+    /**
+     * State Key resolver.
+     */
+    var stateKeyResolver: StateKeyResolver<S> = { it }
+
+    /**
+     * Event Key resolver.
+     */
+    var eventKeyResolver: EventKeyResolver<E> = { it }
 
     /**
      * Guards for each transition.
@@ -99,6 +111,8 @@ class StateMachineConfigurationBuilder<S : Any, E : Any> {
                     throw IllegalStateException("Final state(s) should be defined.")
                 }
             },
+            stateKeyResolver = stateKeyResolver,
+            eventKeyResolver = eventKeyResolver,
             transitions = transitions,
             globalGuards = globalGuards,
             globalActions = globalActions,

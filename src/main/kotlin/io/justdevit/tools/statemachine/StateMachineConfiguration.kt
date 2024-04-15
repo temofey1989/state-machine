@@ -37,4 +37,12 @@ data class StateMachineConfiguration<S : Any, E : Any>(
      * List of transitions.
      */
     val transitions: List<DefinedTransition<S, E>>,
+    /**
+     * State Key Resolver.
+     */
+    val stateKeyResolver: StateKeyResolver<S> = { it },
+    /**
+     * Event Key Resolver.
+     */
+    val eventKeyResolver: EventKeyResolver<E> = { it },
 )
