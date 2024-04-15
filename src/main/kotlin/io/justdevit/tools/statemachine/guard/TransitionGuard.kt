@@ -5,7 +5,7 @@ import io.justdevit.tools.statemachine.TransitionContext
 /**
  * Represents guard (check) on transition action.
  */
-interface TransitionGuard<S, E> {
+interface TransitionGuard<S : Any, E : Any> {
     /**
      * Checks if it is possible to entry to the target state.
      *

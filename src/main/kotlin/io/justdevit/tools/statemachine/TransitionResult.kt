@@ -3,20 +3,20 @@ package io.justdevit.tools.statemachine
 /**
  * Represents the result of the transition.
  */
-sealed interface TransitionResult<S, E> {
+sealed interface TransitionResult<S : Any, E : Any> {
     val transition: Transition<S, E>
 }
 
 /**
  * Represents the success result of the transition.
  */
-data class SuccessResult<S, E>(override val transition: Transition<S, E>) : TransitionResult<S, E>
+data class SuccessResult<S : Any, E : Any>(override val transition: Transition<S, E>) : TransitionResult<S, E>
 
 /**
  * Represents the rejected result of the transition.
  * Usually by rejection from the guard.
  */
-data class RejectedResult<S, E>(
+data class RejectedResult<S : Any, E : Any>(
     override val transition: Transition<S, E>,
     /**
      * Reason of the rejection.
@@ -27,7 +27,7 @@ data class RejectedResult<S, E>(
 /**
  * Represents the failure of the transition.
  */
-data class FailedResult<S, E>(
+data class FailedResult<S : Any, E : Any>(
     override val transition: Transition<S, E>,
     /**
      * The failure exception.
@@ -38,7 +38,7 @@ data class FailedResult<S, E>(
 /**
  * Parameter represent successfulness of the event execution.
  */
-val <S, E> TransitionResult<S, E>.successful: Boolean
+val <S : Any, E : Any> TransitionResult<S, E>.successful: Boolean
     get() =
         when (this) {
             is SuccessResult -> true
@@ -50,7 +50,7 @@ val <S, E> TransitionResult<S, E>.successful: Boolean
  *
  * @param action Action to be executed.
  */
-inline fun <S, E> TransitionResult<S, E>.ifSuccess(action: (SuccessResult<S, E>) -> Unit) {
+inline fun <S : Any, E : Any> TransitionResult<S, E>.ifSuccess(action: (SuccessResult<S, E>) -> Unit) {
     if (this is SuccessResult) {
         action(this)
     }
@@ -61,7 +61,7 @@ inline fun <S, E> TransitionResult<S, E>.ifSuccess(action: (SuccessResult<S, E>)
  *
  * @param action Action to be executed.
  */
-inline fun <S, E> TransitionResult<S, E>.ifRejected(action: (RejectedResult<S, E>) -> Unit) {
+inline fun <S : Any, E : Any> TransitionResult<S, E>.ifRejected(action: (RejectedResult<S, E>) -> Unit) {
     if (this is RejectedResult) {
         action(this)
     }
@@ -72,7 +72,7 @@ inline fun <S, E> TransitionResult<S, E>.ifRejected(action: (RejectedResult<S, E
  *
  * @param action Action to be executed.
  */
-inline fun <S, E> TransitionResult<S, E>.ifFailed(action: (FailedResult<S, E>) -> Unit) {
+inline fun <S : Any, E : Any> TransitionResult<S, E>.ifFailed(action: (FailedResult<S, E>) -> Unit) {
     if (this is FailedResult) {
         action(this)
     }
@@ -83,7 +83,7 @@ inline fun <S, E> TransitionResult<S, E>.ifFailed(action: (FailedResult<S, E>) -
  *
  * @param action Action to be executed.
  */
-inline fun <S, E> TransitionResult<S, E>.ifFailedOrRejected(action: (TransitionResult<S, E>) -> Unit) {
+inline fun <S : Any, E : Any> TransitionResult<S, E>.ifFailedOrRejected(action: (TransitionResult<S, E>) -> Unit) {
     if (this is FailedResult) {
         action(this)
     }

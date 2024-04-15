@@ -7,7 +7,7 @@ import io.justdevit.tools.statemachine.dsl.StateMachineDslMarker
  * Represents the action(s) on transition.
  */
 @StateMachineDslMarker
-interface TransitionAction<S, E> {
+interface TransitionAction<S : Any, E : Any> {
     /**
      * Step before entry to the state.
      * Executes before guards checks.

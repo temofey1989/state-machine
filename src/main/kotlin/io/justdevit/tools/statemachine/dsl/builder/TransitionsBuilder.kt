@@ -10,7 +10,7 @@ import io.justdevit.tools.statemachine.dsl.StateMachineDslMarker
  * @param sourceState Source state of the transition.
  */
 @StateMachineDslMarker
-data class TransitionsBuilder<S, E>(val sourceState: S) {
+data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
     private val transitions: MutableList<DefinedTransition<S, E>> = mutableListOf()
 
     /**

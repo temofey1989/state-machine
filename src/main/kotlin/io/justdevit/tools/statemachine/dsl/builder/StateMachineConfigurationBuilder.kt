@@ -16,7 +16,7 @@ import java.util.UUID.randomUUID
  * @see io.justdevit.tools.statemachine.StateMachineConfiguration
  */
 @StateMachineDslMarker
-class StateMachineConfigurationBuilder<S, E> {
+class StateMachineConfigurationBuilder<S : Any, E : Any> {
     /**
      * ID of the State Machine.
      */

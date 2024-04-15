@@ -10,7 +10,7 @@ import java.util.UUID
  * @param config State Machine configuration.
  * @see StateMachine
  */
-open class DefaultStateMachine<S, E>(private val config: StateMachineConfiguration<S, E>) : StateMachine<S, E> {
+open class DefaultStateMachine<S : Any, E : Any>(private val config: StateMachineConfiguration<S, E>) : StateMachine<S, E> {
     private val transitionMap = config.transitions.associateBy { Pair(it.sourceState, it.event) }
     private var state: S = config.initialState
     private var started: Boolean = false

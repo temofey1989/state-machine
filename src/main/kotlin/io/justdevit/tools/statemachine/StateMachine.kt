@@ -8,7 +8,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Represents the State Machine.
  */
-interface StateMachine<S, E> {
+interface StateMachine<S : Any, E : Any> {
     /**
      * ID of the state machine.
      */

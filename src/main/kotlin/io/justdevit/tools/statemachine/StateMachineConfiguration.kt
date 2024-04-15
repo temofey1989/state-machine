@@ -12,7 +12,7 @@ import java.util.UUID.randomUUID
  * @see DefaultStateMachine
  */
 @StateMachineDslMarker
-data class StateMachineConfiguration<S, E>(
+data class StateMachineConfiguration<S : Any, E : Any>(
     /**
      * ID of the State Machine (default: random UUID).
      */

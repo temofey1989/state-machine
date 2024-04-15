@@ -8,7 +8,7 @@ import io.justdevit.tools.statemachine.guard.TransitionGuard
 /**
  * Transition configuration builder.
  */
-class TransitionConfigurationBuilder<S, E> {
+class TransitionConfigurationBuilder<S : Any, E : Any> {
     private val guards: MutableList<TransitionGuard<S, E>> = mutableListOf()
     private val actions: MutableList<TransitionAction<S, E>> = mutableListOf()
 

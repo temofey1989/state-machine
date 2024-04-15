@@ -3,7 +3,7 @@ package io.justdevit.tools.statemachine
 /**
  * State Machine context.
  */
-data class TransitionContext<S, E>(
+data class TransitionContext<S : Any, E : Any>(
     /**
      * Source state.
      */

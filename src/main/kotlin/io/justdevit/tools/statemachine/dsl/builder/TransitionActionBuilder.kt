@@ -8,7 +8,7 @@ import io.justdevit.tools.statemachine.action.TransitionAction
  *
  * @see StateMachineConfigurationBuilder.globalActions()
  */
-class TransitionActionBuilder<S, E> {
+class TransitionActionBuilder<S : Any, E : Any> {
     private val actions = mutableListOf<TransitionAction<S, E>>()
 
     /**

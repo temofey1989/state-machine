@@ -8,7 +8,7 @@ import io.justdevit.tools.statemachine.guard.TransitionGuard
  *
  * @see StateMachineConfigurationBuilder.globalGuards()
  */
-class TransitionGuardBuilder<S, E> {
+class TransitionGuardBuilder<S : Any, E : Any> {
     private val guards = mutableListOf<TransitionGuard<S, E>>()
 
     /**

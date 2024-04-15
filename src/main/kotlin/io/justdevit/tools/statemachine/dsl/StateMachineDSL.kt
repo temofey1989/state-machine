@@ -14,7 +14,7 @@ import io.justdevit.tools.statemachine.dsl.builder.StateMachineConfigurationBuil
  * @param startup Startup type of the State Machine.
  * @param configure Configure function of the State Machine.
  */
-fun <S, E> stateMachine(
+fun <S : Any, E : Any> stateMachine(
     state: S? = null,
     startup: StateMachineStartup = AUTO,
     configure: StateMachineConfigurationBuilder<S, E>.() -> Unit,
