@@ -29,7 +29,7 @@ data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
      * @param event Event of the transition.
      * @param configure Configurer for transition.
      */
-    fun Pair<S, S>.with(event: E, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null) {
+    fun Pair<S, S>.with(event: E, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null): Pair<S, S> {
         transitions +=
             EventBasedTransition(
                 sourceState = first,
@@ -40,6 +40,7 @@ data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
                         configure?.let { invoke -> it.invoke() }
                     }.build(),
             )
+        return this
     }
 
     /**
@@ -48,7 +49,7 @@ data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
      * @param eventType Type of event.
      * @param configure Configurer for transition.
      */
-    fun <T : E> Pair<S, S>.withType(eventType: Class<T>, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null) {
+    fun <T : E> Pair<S, S>.withType(eventType: Class<T>, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null): Pair<S, S> {
         transitions +=
             EventTypeBasedTransition(
                 sourceState = first,
@@ -59,6 +60,7 @@ data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
                         configure?.let { invoke -> it.invoke() }
                     }.build(),
             )
+        return this
     }
 
     /**
@@ -66,9 +68,7 @@ data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
      *
      * @param configure Configurer for transition.
      */
-    inline fun <reified T : E> Pair<S, S>.with(noinline configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null) {
-        withType(T::class.java, configure)
-    }
+    inline fun <reified T : E> Pair<S, S>.with(noinline configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null): Pair<S, S> = withType(T::class.java, configure)
 
     /**
      * Register transition for event key.
@@ -76,7 +76,7 @@ data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
      * @param eventKey Event key of the transition.
      * @param configure Configurer for transition.
      */
-    fun Pair<S, S>.withKey(eventKey: Any, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null) {
+    fun Pair<S, S>.withKey(eventKey: Any, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null): Pair<S, S> {
         transitions +=
             EventKeyBasedTransition(
                 sourceState = first,
@@ -87,6 +87,7 @@ data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
                         configure?.let { invoke -> it.invoke() }
                     }.build(),
             )
+        return this
     }
 
     fun add(transition: Transition<S, E>) {
