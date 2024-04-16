@@ -49,17 +49,18 @@ data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
      * @param eventType Type of event.
      * @param configure Configurer for transition.
      */
-    fun <T : E> Pair<S, S>.withType(eventType: Class<T>, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null): Pair<S, S> {
+    @Suppress("UNCHECKED_CAST")
+    fun <T : E> Pair<S, S>.withType(eventType: Class<T>, configure: (TransitionConfigurationBuilder<S, T>.() -> Unit)? = null): Pair<S, S> {
         transitions +=
             EventTypeBasedTransition(
                 sourceState = first,
                 targetState = second,
                 eventType = eventType,
-                config = TransitionConfigurationBuilder<S, E>()
+                config = TransitionConfigurationBuilder<S, T>()
                     .also {
                         configure?.let { invoke -> it.invoke() }
                     }.build(),
-            )
+            ) as Transition<S, E>
         return this
     }
 
@@ -68,7 +69,7 @@ data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
      *
      * @param configure Configurer for transition.
      */
-    inline fun <reified T : E> Pair<S, S>.with(noinline configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null): Pair<S, S> = withType(T::class.java, configure)
+    inline fun <reified T : E> Pair<S, S>.with(noinline configure: (TransitionConfigurationBuilder<S, T>.() -> Unit)? = null): Pair<S, S> = withType(T::class.java, configure)
 
     /**
      * Register transition for event key.

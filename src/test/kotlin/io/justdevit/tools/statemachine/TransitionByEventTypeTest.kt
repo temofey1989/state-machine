@@ -18,11 +18,15 @@ class TransitionByEventTypeTest :
                     finalStates = setOf(FINISHED)
 
                     from(NEW) {
-                        to(STARTED).with<Started>()
+                        to(STARTED).with<Started> {
+                            afterExit {
+                                println("Message: ${event.message}")
+                            }
+                        }
                     }
                 }
 
-                stateMachine.sendEvent(Started)
+                stateMachine.sendEvent(Started("TEST"))
 
                 stateMachine.actualState shouldBe STARTED
             }
@@ -36,7 +40,7 @@ class TransitionByEventTypeTest :
     }
 
     sealed interface Event {
-        data object Started : Event
+        data class Started(val message: String) : Event
 
         data object Ended : Event
     }
