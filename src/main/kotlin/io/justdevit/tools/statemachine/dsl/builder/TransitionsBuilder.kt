@@ -45,20 +45,29 @@ data class TransitionsBuilder<S : Any, E : Any>(val sourceState: S) {
     /**
      * Register transition for event type.
      *
+     * @param eventType Type of event.
      * @param configure Configurer for transition.
      */
-    inline fun <reified T : E> Pair<S, S>.with(noinline configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null) {
-        add(
+    fun <T : E> Pair<S, S>.withType(eventType: Class<T>, configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null) {
+        transitions +=
             EventTypeBasedTransition(
                 sourceState = first,
                 targetState = second,
-                eventType = T::class.java,
+                eventType = eventType,
                 config = TransitionConfigurationBuilder<S, E>()
                     .also {
                         configure?.let { invoke -> it.invoke() }
                     }.build(),
-            ) as Transition<S, E>,
-        )
+            )
+    }
+
+    /**
+     * Register transition for event type.
+     *
+     * @param configure Configurer for transition.
+     */
+    inline fun <reified T : E> Pair<S, S>.with(noinline configure: (TransitionConfigurationBuilder<S, E>.() -> Unit)? = null) {
+        withType(T::class.java, configure)
     }
 
     /**
