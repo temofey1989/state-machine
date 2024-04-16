@@ -353,12 +353,12 @@ fun buildConfig(configurer: Mocks.() -> Unit = {}): TestContext {
             globalActions = listOf(mocks.globalAction),
             globalGuards = listOf(mocks.globalGuard),
             transitions = listOf(
-                DefinedTransition(
+                EventBasedTransition(
                     sourceState = "S0",
                     targetState = "S1",
                     event = "E1",
                 ),
-                DefinedTransition(
+                EventBasedTransition(
                     sourceState = "S0",
                     targetState = "S2",
                     event = "E2",

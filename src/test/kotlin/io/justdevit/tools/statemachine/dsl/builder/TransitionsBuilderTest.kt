@@ -1,6 +1,6 @@
 package io.justdevit.tools.statemachine.dsl.builder
 
-import io.justdevit.tools.statemachine.DefinedTransition
+import io.justdevit.tools.statemachine.EventBasedTransition
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldHaveSingleElement
 
@@ -17,7 +17,7 @@ internal class TransitionsBuilderTest :
                 val result = builder.build()
 
                 result shouldHaveSingleElement
-                    DefinedTransition(
+                    EventBasedTransition(
                         sourceState = "0",
                         targetState = "1",
                         event = "E1",

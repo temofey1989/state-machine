@@ -1,10 +1,10 @@
 package io.justdevit.tools.statemachine.dsl.builder
 
 import io.justdevit.tools.statemachine.DefaultStateMachine
-import io.justdevit.tools.statemachine.DefinedTransition
 import io.justdevit.tools.statemachine.EventKeyResolver
 import io.justdevit.tools.statemachine.StateKeyResolver
 import io.justdevit.tools.statemachine.StateMachineConfiguration
+import io.justdevit.tools.statemachine.Transition
 import io.justdevit.tools.statemachine.action.TransitionAction
 import io.justdevit.tools.statemachine.dsl.StateMachineDslMarker
 import io.justdevit.tools.statemachine.guard.FinalStateGuard
@@ -59,7 +59,7 @@ class StateMachineConfigurationBuilder<S : Any, E : Any> {
     /**
      * List of transitions.
      */
-    private val transitions = mutableListOf<DefinedTransition<S, E>>()
+    private val transitions = mutableListOf<Transition<S, E>>()
 
     /**
      * Register list of transitions from state.

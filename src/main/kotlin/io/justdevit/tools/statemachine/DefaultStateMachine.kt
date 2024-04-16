@@ -17,7 +17,12 @@ open class DefaultStateMachine<S : Any, E : Any>(private val config: StateMachin
     private val transitionMap = config.transitions.associateBy {
         Pair(
             first = stateKeyResolver(it.sourceState),
-            second = eventKeyResolver(it.event),
+            second = when (it) {
+                is EventBasedTransition -> eventKeyResolver(it.event)
+                is EventKeyBasedTransition -> it.eventKey
+                is EventTypeBasedTransition -> it.eventType
+                else -> throw IllegalArgumentException("Unsupported transition type: ${it::class.simpleName}")
+            },
         )
     }
     private var state: S = config.initialState
@@ -53,6 +58,7 @@ open class DefaultStateMachine<S : Any, E : Any>(private val config: StateMachin
         checkStateMachineStarted()
         val transition =
             transitionMap[stateKeyResolver(actualState) to eventKeyResolver(event)]
+                ?: transitionMap[stateKeyResolver(actualState) to event::class.java]
                 ?: return RejectedResult(
                     transition = UndefinedTransition(
                         sourceState = actualState,
