@@ -36,7 +36,7 @@ data class FailedResult<S : Any, E : Any>(
 ) : TransitionResult<S, E>
 
 /**
- * Parameter represent successfulness of the event execution.
+ * Parameter represents the successfulness of the event execution.
  */
 val <S : Any, E : Any> TransitionResult<S, E>.successful: Boolean
     get() =

@@ -9,7 +9,7 @@ package io.justdevit.tools.statemachine
 typealias StateKeyResolver<S> = (S) -> Any
 
 /**
- * Represents a function that resolves a event key based on a given event.
+ * Represents a function that resolves an event key based on a given event.
  *
  * @param E The type of the event.
  * @return The resolved event key.

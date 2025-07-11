@@ -6,7 +6,10 @@ import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Represents the State Machine.
+ * Represents a state machine that can transition between states based on events.
+ *
+ * @param S The type representing the states of the state machine.
+ * @param E The type representing the events that trigger state transitions.
  */
 interface StateMachine<S : Any, E : Any> {
     /**
@@ -32,35 +35,35 @@ interface StateMachine<S : Any, E : Any> {
     fun start(state: S? = null)
 
     /**
-     * Resets state of the State Machine to the initial state or defined state if state .
+     * Resets the state of the State Machine to the initial state or defined state if state.
      *
      * @param state State to be on reset.
-     * @throws IllegalStateException In case of the State Machine is not started.
+     * @throws IllegalStateException In the case of the State Machine is not started.
      */
     fun reset(state: S? = null)
 
     /**
      * Sends the event to the State Machine.
      *
-     * @param event Event for the State Machine. Should be of generic type.
+     * @param event Event for the State Machine. Should be of a generic type.
      * @param parameters Parameters for the transition.
-     * @throws IllegalStateException In case of the State Machine is not started.
+     * @throws IllegalStateException In the case of the State Machine is not started.
      */
     suspend fun sendEvent(event: E, parameters: TransitionParameters = TransitionParameters()): TransitionResult<S, E>
 
     /**
      * Sends the event to the State Machine.
      *
-     * @param event Event for the State Machine. Should be of generic type.
+     * @param event Event for the State Machine. Should be of a generic type.
      * @param parameters Metadata parameter map.
-     * @throws IllegalStateException In case of the State Machine is not started.
+     * @throws IllegalStateException In the case of the State Machine is not started.
      */
     suspend fun sendEvent(event: E, parameters: Map<String, Any>): TransitionResult<S, E> = sendEvent(event, TransitionParameters(parameters))
 
     /**
      * Sends the event to the State Machine with custom transition parameters.
      *
-     * @param event Event for the State Machine. Should be of generic type.
+     * @param event Event for the State Machine. Should be of a generic type.
      * @param parametersBuilder A lambda function that builds the parameters using a [TransitionParameters.Builder].
      * @return The result of the event processing as an [TransitionResult] object.
      * @throws IllegalStateException In case the State Machine is not started.
@@ -76,9 +79,9 @@ interface StateMachine<S : Any, E : Any> {
     /**
      * Sends the event to the State Machine.
      *
-     * @param event Event for the State Machine. Should be of generic type.
+     * @param event Event for the State Machine. Should be of a generic type.
      * @param parameters Parameters for the transition.
-     * @throws IllegalStateException In case of the State Machine is not started.
+     * @throws IllegalStateException In the case of the State Machine is not started.
      */
     fun sendEventAndAwait(
         event: E,
@@ -89,9 +92,9 @@ interface StateMachine<S : Any, E : Any> {
     /**
      * Sends the event to the State Machine.
      *
-     * @param event Event for the State Machine. Should be of generic type.
+     * @param event Event for the State Machine. Should be of a generic type.
      * @param parameters Metadata parameter map.
-     * @throws IllegalStateException In case of the State Machine is not started.
+     * @throws IllegalStateException In the case of the State Machine is not started.
      */
     fun sendEventAndAwait(
         event: E,
@@ -102,7 +105,7 @@ interface StateMachine<S : Any, E : Any> {
     /**
      * Sends the event to the State Machine and waits for the result.
      *
-     * @param event Event for the State Machine. Should be of generic type.
+     * @param event Event for the State Machine. Should be of a generic type.
      * @param context The coroutine context to run the sendEvent method on. Defaults to Dispatchers.Default.
      * @param parametersBuilder A lambda function that builds the parameters using a [TransitionParameters.Builder].
      * @return The result of the event processing as an [TransitionResult] object.

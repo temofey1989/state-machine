@@ -26,11 +26,11 @@ data class StateMachineConfiguration<S : Any, E : Any>(
      */
     val finalStates: Set<S>,
     /**
-     * List of global guards (default: empty list).
+     * List of global guards (default: `empty list`).
      */
     val globalGuards: List<TransitionGuard<S, E>> = emptyList(),
     /**
-     * List of global actions (default: empty list).
+     * List of global actions (default: `empty list`).
      */
     val globalActions: List<TransitionAction<S, E>> = emptyList(),
     /**

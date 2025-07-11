@@ -17,7 +17,7 @@ data class TransitionContext<S : Any, E : Any>(
      */
     val event: E,
     /**
-     * Reference to instance of the State Machine.
+     * Reference to an instance of the State Machine.
      */
     val stateMachine: StateMachine<S, E>,
     /**

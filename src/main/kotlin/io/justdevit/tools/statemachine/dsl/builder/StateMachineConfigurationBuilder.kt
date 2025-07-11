@@ -62,7 +62,7 @@ class StateMachineConfigurationBuilder<S : Any, E : Any> {
     private val transitions = mutableListOf<Transition<S, E>>()
 
     /**
-     * Register list of transitions from state.
+     * Register a list of transitions from the state.
      *
      * @param sourceState Source state for transitions.
      * @param prepareTransitions Transitions builder for source state.

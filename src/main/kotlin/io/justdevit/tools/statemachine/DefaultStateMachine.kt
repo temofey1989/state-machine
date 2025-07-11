@@ -5,10 +5,11 @@ import io.justdevit.tools.statemachine.guard.TransitionGuard
 import java.util.UUID
 
 /**
- * Default implementation of the state machine.
+ * Default implementation of a state machine.
  *
- * @param config State Machine configuration.
- * @see StateMachine
+ * @param S The type representing the states of the state machine.
+ * @param E The type representing the events of the state machine.
+ * @property config The configuration detailing states, transitions, actions, guards, and resolvers.
  */
 open class DefaultStateMachine<S : Any, E : Any>(private val config: StateMachineConfiguration<S, E>) : StateMachine<S, E> {
 

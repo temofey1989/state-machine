@@ -4,14 +4,34 @@
 
 # Overview
 
-State Machine is a library for Kotlin projects which contains simple DSL to create state machine.
+State Machine is a library for Kotlin projects that contains a simple DSL to create a state machine.
 
-The Goal of the library is to create better connection between diagrams and the code.  
+The Goal of the library is to create a better connection between diagrams and the code.  
 This will have a positive impact for better understanding of the code and better communications between SW analysts and developers.
+
+## Table of Content
+
+<!-- TOC -->
+
+* [Configuration](#configuration)
+  * [Maven](#maven)
+  * [Gradle](#gradle)
+  * [Gradle (kt)](#gradle-kt)
+* [Features](#features)
+  * [State Machine initialization](#state-machine-initialization)
+  * [Define global actions](#define-global-actions)
+  * [Define global guards](#define-global-guards)
+  * [Define transitions](#define-transitions)
+  * [Send event](#send-event)
+  * [Transition Guard](#transition-guard)
+  * [Transition Action](#transition-action)
+* [Example (Orders)](#example-orders)
+
+<!-- TOC -->
 
 ---
 
-## Dependencies
+## Configuration
 
 ### Maven
 
@@ -26,12 +46,6 @@ This will have a positive impact for better understanding of the code and better
 
 ### Gradle
 
-```groovy
-implementation group: 'io.justdevit.tools', name: 'state-machine', version: $stateMachineVersion
-```
-
-### Gradle (kt)
-
 ```kotlin
 implementation("io.justdevit.tools:state-machine:$stateMachineVersion")
 ```
@@ -40,7 +54,7 @@ implementation("io.justdevit.tools:state-machine:$stateMachineVersion")
 
 ## Features
 
-### State Machine initialization
+### State Machine Initialization
 
 ```kotlin
 stateMachine<States, Events> {
@@ -63,7 +77,7 @@ stateMachine<States, Events> {
 * `AUTO` - State Machine will be started automatically.
 * `LAZY` - State Machine should be started manually (`stateMachine.start()`).
 
-### Define global actions
+### Define Global Actions
 
 ```kotlin
 stateMachine<States, Events> {
@@ -77,7 +91,7 @@ stateMachine<States, Events> {
 }
 ```
 
-### Define global guards
+### Define Global Guards
 
 ```kotlin
 stateMachine<States, Events> {
@@ -91,7 +105,7 @@ stateMachine<States, Events> {
 }
 ```
 
-### Define transitions
+### Define Transitions
 
 ```kotlin
 stateMachine<States, Events> {
@@ -112,7 +126,7 @@ stateMachine<States, Events> {
 }
 ```
 
-### Send event
+### Send Event
 
 Without parameters:
 
@@ -145,7 +159,7 @@ class MyGuard : TransitionGuard<States, Event> {
 }
 ```
 
-There are two method you can implement:
+There are two methods you can implement:
 
 * `onEntry` - check before entry to the state.
 * `onExit` - check before exit from the state.
@@ -163,7 +177,7 @@ class MyAction : TransitionAction<States, Events> {
 }
 ```
 
-There are four method you can implement:
+There are four methods you can implement:
 
 * `beforeEntry` - executes before entry to the state and before entry guard checks.
 * `afterEntry` - executes after entry to the state and after entry guard checks.
@@ -180,7 +194,7 @@ _(In real-life project the diagram will be more difficult, but you should get a 
 From the analyst you have such a diagram:  
 ![orders](./docs/order-states.png)
 
-We can see the that there are 4 states and 4 event types. Let's define them.
+We can see that there are 4 states and 4 event types. Let's define them.
 
 ```kotlin
 enum class OrderState {
@@ -197,8 +211,8 @@ Then we can see that there are some actions in the diagram:
 * Persist payment
 * Notify warehouse
 * Update monitoring dashboard
-* Send cancellation email to the customer
-* Send Thank You email to the customer
+* Send a cancellation email to the customer
+* Send a Thank-You email to the customer
 
 Let's define them:
 
@@ -305,5 +319,5 @@ val orderStateMachine = stateMachine<OrderState, OrderEvent>(state = order.state
 }
 ```
 
-In the end we have pretty simple DSL for describing the state machine.  
+In the end we have a pretty simple DSL for describing the state machine.  
 Each action/guard can be tested with unit tests.

@@ -13,6 +13,7 @@ class TransitionParameters(parameters: Map<String, Any> = emptyMap()) : Map<Stri
      *
      * @param key The key whose associated value is to be returned.
      * @return The value associated with the specified key.
+     *
      * @throws NoSuchElementException If the key is not found in the map.
      * @throws ClassCastException If the value is not of type [T].
      */
@@ -27,7 +28,6 @@ class TransitionParameters(parameters: Map<String, Any> = emptyMap()) : Map<Stri
         /**
          * Adds a parameter to the [TransitionParameters] map.
          *
-         * @param key The key for the parameter.
          * @param value The value for the parameter.
          */
         infix fun String.to(value: Any) {
