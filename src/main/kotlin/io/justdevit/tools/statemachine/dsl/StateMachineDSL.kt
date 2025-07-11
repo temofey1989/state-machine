@@ -16,7 +16,7 @@ import io.justdevit.tools.statemachine.dsl.builder.StateMachineConfigurationBuil
  */
 fun <S : Any, E : Any> stateMachine(
     state: S? = null,
-    startup: StateMachineStartup = AUTO,
+    autoStartup: Boolean = true,
     configure: StateMachineConfigurationBuilder<S, E>.() -> Unit,
 ): StateMachine<S, E> {
     val configBuilder = StateMachineConfigurationBuilder<S, E>()
@@ -24,7 +24,7 @@ fun <S : Any, E : Any> stateMachine(
     return DefaultStateMachine(
         config = configBuilder.build(),
     ).also {
-        if (AUTO == startup) {
+        if (autoStartup) {
             it.start(state)
         }
     }

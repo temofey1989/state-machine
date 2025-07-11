@@ -14,9 +14,7 @@ interface TransitionAction<S : Any, E : Any> {
      *
      * @param context Context of the transition.
      */
-    suspend fun beforeEntry(context: TransitionContext<S, E>) {
-        // noop
-    }
+    suspend fun beforeEntry(context: TransitionContext<S, E>) = Unit
 
     /**
      * Step after entry to the state.
@@ -24,9 +22,7 @@ interface TransitionAction<S : Any, E : Any> {
      *
      * @param context Context of the transition.
      */
-    suspend fun afterEntry(context: TransitionContext<S, E>) {
-        // noop
-    }
+    suspend fun afterEntry(context: TransitionContext<S, E>) = Unit
 
     /**
      * Step before exit from the state.
@@ -34,9 +30,7 @@ interface TransitionAction<S : Any, E : Any> {
      *
      * @param context Context of the transition.
      */
-    suspend fun beforeExit(context: TransitionContext<S, E>) {
-        // noop
-    }
+    suspend fun beforeExit(context: TransitionContext<S, E>) = Unit
 
     /**
      * Step after exit from the state.
@@ -44,7 +38,5 @@ interface TransitionAction<S : Any, E : Any> {
      *
      * @param context Context of the transition.
      */
-    suspend fun afterExit(context: TransitionContext<S, E>) {
-        // noop
-    }
+    suspend fun afterExit(context: TransitionContext<S, E>) = Unit
 }

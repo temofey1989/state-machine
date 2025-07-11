@@ -87,11 +87,11 @@ class StateMachineConfigurationBuilder<S : Any, E : Any> {
     /**
      * Register global guards for the State Machine.
      *
-     * @param prepareGuards Guards preparation function.
+     * @param block Guard's preparation function.
      */
-    fun globalGuards(prepareGuards: TransitionGuardBuilder<S, E>.() -> Unit) {
+    fun globalGuards(block: TransitionGuardBuilder<S, E>.() -> Unit) {
         val builder = TransitionGuardBuilder<S, E>()
-        builder.prepareGuards()
+        builder.block()
         globalGuards += builder.build()
     }
 
