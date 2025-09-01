@@ -34,6 +34,7 @@ tasks {
             jvmTarget = JvmTarget.fromTarget(java.sourceCompatibility.majorVersion)
             freeCompilerArgs = listOf(
                 "-Xjsr305=strict",
+                "-Xcontext-sensitive-resolution",
             )
         }
     }
