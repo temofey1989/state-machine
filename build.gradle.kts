@@ -1,4 +1,3 @@
-import org.gradle.api.JavaVersion.VERSION_21
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
@@ -20,13 +19,10 @@ dependencies {
     testImplementation(libs.bundles.testing)
 }
 
-java.sourceCompatibility = VERSION_21
+java.sourceCompatibility = JavaVersion.VERSION_25
 
 tasks {
-    formatKotlin {
-    }
-
-    lintKotlin {
+    kotlinter {
     }
 
     withType<KotlinCompile> {

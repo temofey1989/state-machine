@@ -3,6 +3,7 @@ package io.justdevit.tools.statemachine.dsl
 import io.justdevit.tools.statemachine.DefaultStateMachine
 import io.justdevit.tools.statemachine.StateMachine
 import io.justdevit.tools.statemachine.dsl.builder.StateMachineConfigurationBuilder
+import kotlin.DeprecationLevel.ERROR
 
 /**
  * Creates and configures a state machine.
@@ -29,3 +30,11 @@ fun <S : Any, E : Any> stateMachine(
         }
     }
 }
+
+@Suppress("UnusedReceiverParameter", "unused")
+@Deprecated("Nested state machine is not allowed.", level = ERROR)
+fun StateMachineConfigurationBuilder<*, *>.stateMachine(
+    state: Any? = null,
+    autoStartup: Boolean = true,
+    configure: StateMachineConfigurationBuilder<*, *>.() -> Unit,
+): Nothing = error("Nested state machine is not allowed.")
